@@ -1,0 +1,12 @@
+# 部品の同値類(ComponentVariants.tsv)の補足表。tools/build_kanji_index.py が読む。
+# CJKRadicals.txt / EquivalentUnifiedIdeograph.txt(UCD)と bushu.plist に無い、部首の字形を手で補う。
+# 1 行 = 部首番号 TAB 字形。書くのは「この字形はこの部首の形である」という事実だけ(他のデータベースからの取り込みではない)。
+# ここに書いた字形は原子部品になり、IDS で分解されなくなる。
+61	㣺
+96	𤣩
+118	𥫗
+120	糹
+123	𦍌
+149	訁
+157	𧾷
+184	𩙿

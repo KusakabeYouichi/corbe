@@ -1,0 +1,12 @@
+# Xcode はスキーム保存時に é を分解形や XML 実体参照(e&#x301; / &#xe9; 等)へ書き換え、差分ノイズを作る(écritu と同じ問題)。
+# clean フィルタで git から見える内容を NFC の é に正規化する。
+# フィルタ実体はローカル設定が必要(クローン後に 1 回。README 参照):
+#   git config filter.xcscheme-nfc.clean "perl -CSD -pe 's/corb(?:e&#x301;|e&#769;|&#x[eE]9;|&#233;|e\\x{301}|\xC3\xA9|\xE9)/corb\\x{E9}/g'"
+#   git config filter.xcscheme-nfc.smudge cat
+*.xcscheme filter=xcscheme-nfc
+
+# BabelStone IDS は原本(BOM 付き UTF-8、CRLF)のまま置く。sha256 を保つため改行を変換しない
+third_party/babelstone/IDS.TXT -text
+
+# 生成した索引(TSV)は LF で固定する
+*.tsv text eol=lf

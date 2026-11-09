@@ -1,0 +1,9 @@
+// 署名用の識別子。ここはプレースホルダーのままにし、実際の値は Config/Signing.local.xcconfig(gitignore)に書く。
+// 雛形は Config/Signing.local.xcconfig.example
+CORBE_DEVELOPMENT_TEAM = YOUR_TEAM_ID
+CORBE_APP_BUNDLE_IDENTIFIER = com.example.corbe
+// UI テスト(corbeUITests)の bundle ID はアプリの bundle ID から作る(Signing.local.xcconfig で上書きしない)
+CORBE_UITESTS_BUNDLE_IDENTIFIER = $(CORBE_APP_BUNDLE_IDENTIFIER).uitests
+
+// Optional per-developer signing overrides (ignored from git).
+#include? "Signing.local.xcconfig"

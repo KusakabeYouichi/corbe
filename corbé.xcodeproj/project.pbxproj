@@ -1,0 +1,468 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C0BE10000000000000000101 /* CorbeCore in Frameworks */ = {isa = PBXBuildFile; productRef = C0BE10000000000000000501 /* CorbeCore */; };
+		C0BE10000000000000000102 /* CorbeUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0BE10000000000000000502 /* CorbeUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C0BE10000000000000001101 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0BE10000000000000000901 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0BE10000000000000000701;
+			remoteInfo = corbe;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C0BE10000000000000000201 /* corbe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = corbe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0BE10000000000000001201 /* corbeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = corbeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0BE10000000000000000202 /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
+		C0BE10000000000000000203 /* CorbeKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CorbeKit; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C0BE10000000000000000D01 /* Exceptions for "App" folder in "corbe" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C0BE10000000000000000701 /* corbe */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C0BE10000000000000000301 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C0BE10000000000000000D01 /* Exceptions for "App" folder in "corbe" target */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		C0BE10000000000000001301 /* corbeUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = corbeUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C0BE10000000000000000401 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0BE10000000000000000101 /* CorbeCore in Frameworks */,
+				C0BE10000000000000000102 /* CorbeUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0BE10000000000000001401 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C0BE10000000000000000601 = {
+			isa = PBXGroup;
+			children = (
+				C0BE10000000000000000301 /* App */,
+				C0BE10000000000000001301 /* corbeUITests */,
+				C0BE10000000000000000602 /* Config */,
+				C0BE10000000000000000603 /* Packages */,
+				C0BE10000000000000000604 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C0BE10000000000000000602 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C0BE10000000000000000202 /* Edition.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		C0BE10000000000000000603 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C0BE10000000000000000203 /* CorbeKit */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		C0BE10000000000000000604 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C0BE10000000000000000201 /* corbe.app */,
+				C0BE10000000000000001201 /* corbeUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C0BE10000000000000000701 /* corbe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0BE10000000000000000A02 /* Build configuration list for PBXNativeTarget "corbe" */;
+			buildPhases = (
+				C0BE10000000000000000801 /* Enforce Blank Line After Top-Level Brace */,
+				C0BE10000000000000000802 /* Sources */,
+				C0BE10000000000000000401 /* Frameworks */,
+				C0BE10000000000000000803 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C0BE10000000000000000301 /* App */,
+			);
+			name = corbe;
+			packageProductDependencies = (
+				C0BE10000000000000000501 /* CorbeCore */,
+				C0BE10000000000000000502 /* CorbeUI */,
+			);
+			productName = corbe;
+			productReference = C0BE10000000000000000201 /* corbe.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C0BE10000000000000001701 /* corbeUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0BE10000000000000001A01 /* Build configuration list for PBXNativeTarget "corbeUITests" */;
+			buildPhases = (
+				C0BE10000000000000001801 /* Sources */,
+				C0BE10000000000000001401 /* Frameworks */,
+				C0BE10000000000000001802 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0BE10000000000000001601 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0BE10000000000000001301 /* corbeUITests */,
+			);
+			name = corbeUITests;
+			productName = corbeUITests;
+			productReference = C0BE10000000000000001201 /* corbeUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C0BE10000000000000000901 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2710;
+				LastUpgradeCheck = 2710;
+				TargetAttributes = {
+					C0BE10000000000000000701 = {
+						CreatedOnToolsVersion = 27.1;
+					};
+					C0BE10000000000000001701 = {
+						CreatedOnToolsVersion = 27.1;
+						TestTargetID = C0BE10000000000000000701;
+					};
+				};
+			};
+			buildConfigurationList = C0BE10000000000000000A01 /* Build configuration list for PBXProject "corbé" */;
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				ja,
+				Base,
+			);
+			mainGroup = C0BE10000000000000000601;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C0BE10000000000000000C01 /* XCLocalSwiftPackageReference "Packages/CorbeKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C0BE10000000000000000604 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C0BE10000000000000000701 /* corbe */,
+				C0BE10000000000000001701 /* corbeUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C0BE10000000000000000803 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0BE10000000000000001802 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C0BE10000000000000000801 /* Enforce Blank Line After Top-Level Brace */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Enforce Blank Line After Top-Level Brace";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/check_top_level_brace_blank_lines.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C0BE10000000000000000802 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0BE10000000000000001801 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0BE10000000000000001601 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0BE10000000000000000701 /* corbe */;
+			targetProxy = C0BE10000000000000001101 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C0BE10000000000000000B01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C0BE10000000000000000B02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C0BE10000000000000000B03 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0BE10000000000000000202 /* Edition.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(CORBE_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "corbé";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CORBE_APP_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = corbe;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C0BE10000000000000000B04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0BE10000000000000000202 /* Edition.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(CORBE_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "corbé";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CORBE_APP_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = corbe;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C0BE10000000000000001B01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0BE10000000000000000202 /* Edition.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(CORBE_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CORBE_UITESTS_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = corbe;
+			};
+			name = Debug;
+		};
+		C0BE10000000000000001B02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C0BE10000000000000000202 /* Edition.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(CORBE_DEVELOPMENT_TEAM)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CORBE_UITESTS_BUNDLE_IDENTIFIER)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = corbe;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C0BE10000000000000000A01 /* Build configuration list for PBXProject "corbé" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0BE10000000000000000B01 /* Debug */,
+				C0BE10000000000000000B02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0BE10000000000000000A02 /* Build configuration list for PBXNativeTarget "corbe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0BE10000000000000000B03 /* Debug */,
+				C0BE10000000000000000B04 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0BE10000000000000001A01 /* Build configuration list for PBXNativeTarget "corbeUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0BE10000000000000001B01 /* Debug */,
+				C0BE10000000000000001B02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		C0BE10000000000000000C01 /* XCLocalSwiftPackageReference "Packages/CorbeKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/CorbeKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C0BE10000000000000000501 /* CorbeCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0BE10000000000000000C01 /* XCLocalSwiftPackageReference "Packages/CorbeKit" */;
+			productName = CorbeCore;
+		};
+		C0BE10000000000000000502 /* CorbeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C0BE10000000000000000C01 /* XCLocalSwiftPackageReference "Packages/CorbeKit" */;
+			productName = CorbeUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C0BE10000000000000000901 /* Project object */;
+}

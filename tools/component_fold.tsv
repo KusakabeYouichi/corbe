@@ -1,0 +1,4 @@
+# 部品の寄せ表。tools/build_kanji_index.py が IDS の部品に、トークンを作る前に適用する。
+# 1 行 = 部品 TAB 寄せ先。入力しにくい部品形を、見た目どおりの入力字へ寄せる。
+# (CJK Radicals Supplement の部品は EquivalentUnifiedIdeograph.txt で寄せるので、ここには書かない)
+𤣩	王

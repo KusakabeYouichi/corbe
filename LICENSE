@@ -1,0 +1,29 @@
+corbé — Copyright (c) 2026 Kusakabe Youichi. All rights reserved.
+corbé — Copyright (c) 2026 Kusakabe Youichi(日下部). 無断転載・無断利用を禁じます。
+
+This repository is published so that its source can be read, reviewed and
+built by people the author has invited to collaborate. It is NOT released
+under an open source license. Unless you have the author's written
+permission, you may not copy, modify, redistribute, sublicense or use this
+source code, the artwork or the author-original data in a product or
+service of your own.
+
+このリポジトリーは、ソースの閲覧・レビューと、作者が招いた共同作業者のビルドの
+ために公開しています。オープンソースライセンスではありません。作者の書面による
+許可なく、ソースコード・画像・作者オリジナルの語彙データを、複製・改変・再配布・
+サブライセンス・自分の製品やサービスへの組み込みをすることはできません。
+
+----------------------------------------------------------------------
+Third-party material / 第三者の素材
+----------------------------------------------------------------------
+
+The statement above does not apply to third-party material. Each item stays
+under its own license, and nothing here restricts the rights those licenses
+give you. 上の記述は第三者の素材には及びません。それぞれ元のライセンスに従います。
+
+- Unicode data: Unihan and the Unicode Character Database (Unicode License v3).
+- BabelStone IDS (third_party/babelstone/IDS.TXT), by Andrew West, who states
+  in the file that the data is free to use without permission or attribution.
+
+The sources and full texts are listed in third_party/THIRD_PARTY_LICENSES.md.
+出典と全文は third_party/THIRD_PARTY_LICENSES.md にあります。
