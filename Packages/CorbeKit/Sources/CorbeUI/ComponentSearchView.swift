@@ -124,11 +124,11 @@ struct ComponentSearchView: View {
         .accessibilityIdentifier("componentPosition.\(index)")
     }
 
-    // 部首のボタン。押すと吹き出しで部首の一覧を出す。当たり判定は幅いっぱい。索引の読み込み前は押せない
+    // 部首のボタン。指が触れた時点で吹き出しの部首の一覧を出す(離すまで待たない)。当たり判定は幅いっぱい。索引の読み込み前は押せない
     private func radicalButton(_ index: Int) -> some View {
         let position = rows[index].query.position
         return Button {
-            openRadicalList = index
+            openRadicalList(index)
         } label: {
             HStack(spacing: 6) {
                 Text(rows[index].choice?.label ?? "選択")
@@ -147,7 +147,7 @@ struct ComponentSearchView: View {
             )
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressDownButtonStyle { openRadicalList(index) })
         .disabled(library.loaded == nil)
         .accessibilityIdentifier("componentForm.\(index)")
         .popover(isPresented: radicalListBinding(index)) {
@@ -164,6 +164,11 @@ struct ComponentSearchView: View {
             }
             .presentationCompactAdaptation(.popover)
         }
+    }
+
+    private func openRadicalList(_ index: Int) {
+        KeyboardDismissal.dismiss()
+        openRadicalList = index
     }
 
     private func radicalListBinding(_ index: Int) -> Binding<Bool> {
@@ -346,6 +351,7 @@ struct JapaneseTextField: UIViewRepresentable {
         field.autocapitalizationType = .none
         field.clearButtonMode = .whileEditing
         field.returnKeyType = .done
+        field.inputAccessoryView = KeyboardDismissal.accessoryToolbar()
         field.accessibilityIdentifier = accessibilityIdentifier
         field.setContentHuggingPriority(.defaultLow, for: .horizontal)
         field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)

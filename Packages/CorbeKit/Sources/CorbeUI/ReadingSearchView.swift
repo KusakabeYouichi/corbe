@@ -24,14 +24,13 @@ struct ReadingSearchView: View {
 
     var body: some View {
         AdaptiveSearchLayout {
-            TextField(kind == .on ? "音読み(例 そん)" : "訓読み(例 むら)", text: $input)
-                .textFieldStyle(.roundedBorder)
-                .font(.title3)
-                .autocorrectionDisabled()
-                #if os(iOS)
-                .textInputAutocapitalization(.never)
-                #endif
-                .accessibilityIdentifier("readingField.\(identifierSuffix)")
+            // 部品の入力欄と同じ欄(日本語キーボードで開き、キーボードの上に「完了」を出す)
+            JapaneseTextField(
+                text: $input,
+                placeholder: kind == .on ? "音読み(例 そん)" : "訓読み(例 むら)",
+                accessibilityIdentifier: "readingField.\(identifierSuffix)"
+            )
+                .frame(height: 36)
                 .padding(12)
                 .modifier(CardBackground())
         } results: {

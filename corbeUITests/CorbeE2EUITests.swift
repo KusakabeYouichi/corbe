@@ -203,6 +203,55 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertFalse(kanji("村", app: app).exists, "前の結果が残っている")
     }
 
+    func testG14_RadicalListOpensOnTouchDown() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        let button = app.buttons["componentForm.0"].firstMatch
+        let far = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+
+        // 押したまま遠くへ動かしてから離す。離した所はボタンの外なので、Button の action では開かない
+        button.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 0.6, thenDragTo: far)
+
+        XCTAssertTrue(element("componentFormList.0", in: app).waitForExistence(timeout: 5), "触れただけでは部首の一覧が開かない")
+    }
+
+    func testG15_KeyboardDoneClosesKeyboardOnFreeText() {
+        let app = launch()
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), "キーボードが出ない")
+
+        app.buttons["keyboardDone"].firstMatch.tap()
+
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5), "完了 でキーボードが閉じない")
+    }
+
+    func testG16_TappingResultsAreaClosesKeyboard() {
+        let app = launch()
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), "キーボードが出ない")
+
+        element("emptyHint", in: app).tap()
+
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5), "結果の側のタップでキーボードが閉じない")
+    }
+
+    func testG17_KeyboardDoneClosesKeyboardOnReading() {
+        let app = launch()
+        app.tabBars.buttons["japonaise"].tap()
+        let field = app.textFields["readingField.kun"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), "キーボードが出ない")
+
+        app.buttons["keyboardDone"].firstMatch.tap()
+
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5), "完了 でキーボードが閉じない")
+    }
+
     func testE3_LongPressShowsDetailWithoutCopying() {
         let app = launch()
         UIPasteboard.general.string = Self.sentinel
