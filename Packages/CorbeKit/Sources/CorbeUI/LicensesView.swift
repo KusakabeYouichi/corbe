@@ -13,6 +13,14 @@ struct LicensesView: View {
         return text
     }()
 
+    // バージョン(MARKETING_VERSION)とビルド番号(CURRENT_PROJECT_VERSION)。ビルド番号はバージョンと別に数える
+    private static let versionText: String = {
+        let info = Bundle.main.infoDictionary
+        let version = (info?["CFBundleShortVersionString"] as? String) ?? "?"
+        let build = (info?["CFBundleVersion"] as? String) ?? "?"
+        return "バージョン \(version)(ビルド \(build))"
+    }()
+
     private static let babelStoneStatement = """
     Therefore, anyone is free to make use of the IDS data provided in this file for personal or commercial \
     purposes without asking permission or providing attribution. I furthermore waive any copyright claims to the \
@@ -25,6 +33,8 @@ struct LicensesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     section("corbé") {
+                        Text(Self.versionText)
+                            .accessibilityIdentifier("appVersion")
                         Text("Copyright © 2026 Kusakabe Youichi. All rights reserved.")
                         Text("第三者のデータは、それぞれのライセンスに従います(以下)。")
                     }

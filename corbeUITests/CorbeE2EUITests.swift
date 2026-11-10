@@ -246,12 +246,19 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertEqual(readPasteboard(), "村")
     }
 
-    func testE6_LicensesShowUnicodeAndBabelStone() {
+    func testE6_LicensesShowVersionUnicodeAndBabelStone() {
         let app = launch()
 
         app.buttons["licensesButton"].firstMatch.tap()
 
         XCTAssertTrue(element("licensesView", in: app).waitForExistence(timeout: 5), "ライセンス画面が出ない")
+        // バージョンとビルド番号は上げるたびに変わるので、値ではなく形で見る
+        let version = app.staticTexts["appVersion"]
+        XCTAssertTrue(version.waitForExistence(timeout: 5), "バージョンの表示が無い")
+        XCTAssertNotNil(
+            version.label.range(of: #"^バージョン \d+(\.\d+)*\(ビルド \d+\)$"#, options: .regularExpression),
+            "バージョンの表示の形が違う: \(version.label)"
+        )
         XCTAssertTrue(text(containing: "UNICODE LICENSE V3", app: app).waitForExistence(timeout: 5))
         XCTAssertTrue(text(containing: "BabelStone IDS", app: app).exists)
         XCTAssertTrue(text(containing: "without asking permission or providing attribution", app: app).exists)

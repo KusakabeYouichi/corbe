@@ -40,6 +40,12 @@ git config filter.xcscheme-nfc.clean "perl -CSD -pe 's/corb(?:e&#x301;|e&#769;|&
 git config filter.xcscheme-nfc.smudge cat
 ```
 
+## バージョンとビルド番号
+
+- バージョン(`MARKETING_VERSION`)は 1.1 から始める。ビルド番号(`CURRENT_PROJECT_VERSION`)はバージョンと別に、1 から数える(バージョンを上げても戻さない)
+- どちらも `corbé.xcodeproj/project.pbxproj` の値を書き換えてコミットする(全構成で同じ値)
+- アプリでは (i) のライセンス画面の先頭に「バージョン X.Y(ビルド N)」の形で出る
+
 ## テストとビルド
 
 検索のテストは Mac 上で `swift test` で回す(生成済みの索引を読むので、元データの取得は要らない)。
