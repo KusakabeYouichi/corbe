@@ -8,7 +8,8 @@ information is shown in the in-app license screen.
 - https://www.unicode.org/charts/unihan.html — Unicode License v3
   (https://www.unicode.org/license.txt, full text in
   `third_party/unicode/UNICODE-LICENSE.txt`)
-- Version 17.0.0: `Unihan.zip` (kRSUnicode, kTotalStrokes, kJis0, kJapanese),
+- Version 17.0.0: `Unihan.zip` (kRSUnicode, kTotalStrokes, kJis0, kJapanese, kJoyoKanji,
+  kJinmeiyoKanji),
   `CJKRadicals.txt` and `EquivalentUnifiedIdeograph.txt`, fetched by
   `tools/fetch_sources.sh` and checked against `tools/sources.sha256`
   (raw files are not committed)
@@ -38,6 +39,30 @@ information is shown in the in-app license screen.
   here and in the app as a courtesy
 - The component columns of `KanjiIndex.tsv` are derived from this file
   (`tools/build_kanji_index.py`)
+
+## tanos.co.uk JLPT kanji lists (JLPT level, unofficial)
+
+- Jonathan Waller, https://www.tanos.co.uk/jlpt/ — Creative Commons
+  Attribution ("BY"). The site states: "Everything on this site (that I'm not
+  selling), is licenced under Creative Commons \"BY\". Basically this means...
+  use anything here however you like (commercial or non-commercial), but
+  credit my site." (https://www.tanos.co.uk/jlpt/sharing/, read from the
+  Wayback Machine snapshot of 2025-11-14 because the domain no longer resolves)
+- `third_party/tanos/jlpt_kanji.tsv` (2,211 kanji, N5–N1) was extracted from
+  the Wayback Machine snapshots (2020-07/08) of
+  `tanos.co.uk/jlpt/jlptN/kanji/`. A kanji listed at several levels keeps the
+  easiest one. The JLPT has published no official kanji list since 2010, so
+  the app labels the level as unofficial (非公式)
+- The JLPT column of `KanjiIndex.tsv` is derived from this file
+
+## 学年別漢字配当表 (school grade of 教育漢字)
+
+`tools/kyoiku_kanji.tsv` (1,026 kanji) is the table attached to the 小学校学習指導要領
+(平成29年文部科学省告示第63号). A 告示 is not subject to copyright
+(Copyright Act of Japan, Article 13). The table in the official PDF is an
+image, so it was transcribed with OCR and checked against the per-grade counts
+printed in the table and against KANJIDIC2's grade field (used only for the
+check; no KANJIDIC2 data is included).
 
 ## Author-compiled data
 

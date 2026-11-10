@@ -39,10 +39,16 @@ struct LicensesView: View {
                         Text("第三者のデータは、それぞれのライセンスに従います(以下)。")
                     }
                     section("Unihan / Unicode Character Database") {
-                        Text("部首・画数・区点・読み(Unihan 17.0.0)と部首の字(CJKRadicals.txt / EquivalentUnifiedIdeograph.txt)。Unicode License v3")
+                        Text("部首・画数・区点・読み・常用/人名用(Unihan 17.0.0)と部首の字(CJKRadicals.txt / EquivalentUnifiedIdeograph.txt)。Unicode License v3")
                         Text(Self.unicodeLicense)
                             .font(.caption.monospaced())
                             .textSelection(.enabled)
+                    }
+                    section("JLPT の級(非公式)") {
+                        Text("Jonathan Waller, tanos.co.uk の JLPT 漢字表(https://www.tanos.co.uk/jlpt/)。Creative Commons Attribution (CC BY)")
+                    }
+                    section("教育漢字の学年") {
+                        Text("学年別漢字配当表(小学校学習指導要領 平成29年文部科学省告示第63号 別表)")
                     }
                     section("BabelStone IDS") {
                         Text("部品の分解。Andrew West (魏安), https://www.babelstone.co.uk/CJK/IDS.TXT(Unicode 16.0 版, 2025-06-27)")

@@ -49,6 +49,13 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
     public let onReadings: [String]
     public let kunReadings: [String]
     public let components: [ComponentToken]
+    // 常用漢字・人名用漢字(Unihan kJoyoKanji / kJinmeiyoKanji。許容字体・異体として載る字も含む)
+    public let isJoyo: Bool
+    public let isJinmeiyo: Bool
+    // 教育漢字の学年(学年別漢字配当表)。教育漢字でなければ nil
+    public let schoolGrade: Int?
+    // JLPT の級(5 = N5 〜 1 = N1。tanos.co.uk の非公式の表)。無ければ nil
+    public let jlptLevel: Int?
 
     public var id: String { character }
 
@@ -69,7 +76,11 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
         kuten: String,
         onReadings: [String],
         kunReadings: [String],
-        components: [ComponentToken]
+        components: [ComponentToken],
+        isJoyo: Bool = false,
+        isJinmeiyo: Bool = false,
+        schoolGrade: Int? = nil,
+        jlptLevel: Int? = nil
     ) {
         self.character = character
         self.radical = radical
@@ -79,6 +90,10 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
         self.onReadings = onReadings
         self.kunReadings = kunReadings
         self.components = components
+        self.isJoyo = isJoyo
+        self.isJinmeiyo = isJinmeiyo
+        self.schoolGrade = schoolGrade
+        self.jlptLevel = jlptLevel
     }
 
     // 検索結果の並び(総画数 → コードポイント)

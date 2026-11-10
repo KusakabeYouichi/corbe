@@ -10,7 +10,7 @@
   - élément / Kangxi: 康熙字典の部首(位置カテゴリー → 部首の字形)と画数で探す(écritu の部首ピッカーを流用)
   - Lecture / chinoise: 音読みの前方一致(ひらがな・カタカナどちらでも)
   - Lecture / japonaise: 訓読みの前方一致(ひらがな・カタカナどちらでも)
-- 結果の字をタップするとコピーし、長押しで読み・U+XXXX・区点・総画数を出す
+- 結果の字をタップするとコピーし、長押しで読み・U+XXXX・区点・総画数・部首・区分(常用 / 教育漢字の学年 / 人名用)・JLPT の級を出す
 
 ## 構成
 
@@ -80,10 +80,14 @@ python3 tools/build_kanji_index.py   # Packages/CorbeKit/Sources/CorbeCore/Resou
 
 - Unihan / Unicode Character Database 17.0.0(Unicode License v3): 部首・画数(kRSUnicode / kTotalStrokes)、区点(kJis0)、読み(kJapanese)、部首の字(CJKRadicals.txt / EquivalentUnifiedIdeograph.txt)
 - BabelStone IDS(Andrew West。ファイルの中で、許可も帰属表示も要らないと表明されている): 部品の分解。URL が常に最新版を返すため、採用した版(Unicode 16.0 版、File Date 2025-06-27)を `third_party/babelstone/IDS.TXT` としてコミットしている。更新は手で差し替えてコミットする
+- 学年別漢字配当表(平成29年告示。著作権の対象外): 教育漢字の学年。PDF の表は画像なので OCR で起こし、学年別の字数と KANJIDIC2 の grade で検算して `tools/kyoiku_kanji.tsv` に置いた
+- tanos.co.uk の JLPT 漢字表(Jonathan Waller、CC BY): JLPT の級。2010 年以降の公式の漢字表は無いため、アプリでは「非公式」と出す。サイトが引けなくなっているので、Wayback Machine の写し(2020 年)から `third_party/tanos/jlpt_kanji.tsv` を起こした
 - 詳細は `third_party/THIRD_PARTY_LICENSES.md`
 
 ## データの限界
 
+- 長押しの「人名用」は戸籍法施行規則 別表第二(Unihan kJinmeiyoKanji)の字。常用漢字は別表第二に無いので ×(名前には使える)。
+  常用は Unihan kJoyoKanji で、許容字体(剥 填 頬)と 叱(表の字形は 𠮟)も常用とする
 - 読み検索で出るのは Unihan の kJapanese を持つ字だけ(読みの無い字はどの読みでも出ない)
 - IDS は日本の字形(J)を優先して選ぶ。J 字形の IDS は にくづき を 月 で書く(肺 = ⿰月市)ため、[偏 月] は 月 と にくづき を区別しない(肉 の同値類に 月 は入れていない)。
   部首のプルダウンで 肉(にくづき)を選んだときも 月 で照合する

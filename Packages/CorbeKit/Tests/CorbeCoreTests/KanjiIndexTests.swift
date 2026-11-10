@@ -96,4 +96,40 @@ struct KanjiIndexTests {
 
         #expect(components.isDisjoint(with: ["十", "𠆢", "一", "丨"]))
     }
+
+    @Test("A20 区分: 村 は常用・教育 1 年・JLPT N2、存 は教育 6 年・N3、萬 は人名用のみ、鬱 は常用のみ、丂 はどれでもない")
+    func categoryColumns() throws {
+        let mura = try #require(Bundled.entry("村"))
+        #expect((mura.isJoyo, mura.isJinmeiyo, mura.schoolGrade, mura.jlptLevel) == (true, false, 1, 2))
+        let son = try #require(Bundled.entry("存"))
+        #expect((son.isJoyo, son.schoolGrade, son.jlptLevel) == (true, 6, 3))
+        let man = try #require(Bundled.entry("萬"))
+        #expect((man.isJoyo, man.isJinmeiyo, man.schoolGrade, man.jlptLevel) == (false, true, nil, nil))
+        let utsu = try #require(Bundled.entry("鬱"))
+        #expect((utsu.isJoyo, utsu.isJinmeiyo, utsu.schoolGrade, utsu.jlptLevel) == (true, false, nil, nil))
+        let kou = try #require(Bundled.entry("丂"))
+        #expect((kou.isJoyo, kou.isJinmeiyo, kou.schoolGrade, kou.jlptLevel) == (false, false, nil, nil))
+    }
+
+    @Test("A21 件数: 常用 2,139(許容字体 剥 填 頬 と 叱 を含む)・教育 1,026(学年別 80/160/200/202/193/191)・JLPT 2,211")
+    func categoryCounts() {
+        let entries = Bundled.index.entries
+        #expect(entries.filter(\.isJoyo).count == 2_139)
+        let grades = (1...6).map { grade in entries.filter { $0.schoolGrade == grade }.count }
+        #expect(grades == [80, 160, 200, 202, 193, 191])
+        #expect(entries.filter { $0.jlptLevel != nil }.count == 2_211)
+        #expect(entries.allSatisfy { $0.schoolGrade == nil || $0.isJoyo })
+        #expect(!entries.contains { $0.isJoyo && $0.isJinmeiyo })
+    }
+
+    @Test("A22 区分の列の形が違う行は読み込みで弾く(常用 2・学年 7・JLPT 0)")
+    func malformedCategoryColumnsAreRejected() {
+        let base = "村\t75\t3\t7\t34-28\tソン\tむら\tL:木 R:寸"
+        for tail in ["\t2\t\t1\t2", "\t1\t\t7\t2", "\t1\t\t1\t0", "\t1\t\t1"] {
+            #expect(throws: CorbeDataError.malformedLine(file: "KanjiIndex.tsv", line: 1)) {
+                try KanjiIndex(contents: base + tail)
+            }
+        }
+        #expect((try? KanjiIndex(contents: base + "\t1\t\t1\t2"))?.entries.first?.schoolGrade == 1)
+    }
 }

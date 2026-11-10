@@ -220,8 +220,31 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertEqual(element("detail.kun", in: app).label, "むら")
         XCTAssertEqual(element("detail.codePoint", in: app).label, "U+6751")
         XCTAssertEqual(element("detail.kuten", in: app).label, "34-28")
+        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(1年)  人名用 ×")
+        XCTAssertEqual(element("detail.jlpt", in: app).label, "N2(非公式)")
         XCTAssertFalse(element("copiedBadge", in: app).exists, "長押しでコピーされた")
         XCTAssertEqual(readPasteboard(), Self.sentinel)
+    }
+
+    func testE3b_DetailSeparatesReadingsWithIdeographicComma() {
+        let app = launch()
+        app.tabBars.buttons["chinoise"].tap()
+        let field = app.textFields["readingField.on"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("ぞん")
+        dismissKeyboard(app: app)
+        let son = kanji("存", app: app)
+        XCTAssertTrue(son.waitForExistence(timeout: 10), "chinoise ぞん の結果に 存 が無い")
+        scrollUntilHittable(son, in: app)
+
+        son.press(forDuration: 1.0)
+
+        XCTAssertTrue(element("detail.on", in: app).waitForExistence(timeout: 5), "詳細が出ない")
+        XCTAssertEqual(element("detail.on", in: app).label, "ソン、ゾン、セン")
+        XCTAssertEqual(element("detail.kun", in: app).label, "ある、たもつ、ながらえる、ぞんじる")
+        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(6年)  人名用 ×")
+        XCTAssertEqual(element("detail.jlpt", in: app).label, "N3(非公式)")
     }
 
     func testE4_KangxiRadicalGridCopiesMura() {
@@ -424,14 +447,19 @@ final class CorbeE2EUITests: XCTestCase {
         scrollUntilHittable(target, in: app.scrollViews.firstMatch)
     }
 
+    // 項目が容器の中に収まるまで少しずつ動かす。swipe は行き過ぎて項目が上端に掛かり、
+    // 掛かった項目の isHittable は例外になるため、位置を見て上下に 120pt ずつ引く
     private func scrollUntilHittable(_ target: XCUIElement, in container: XCUIElement) {
-        for _ in 0..<15 {
-            if target.exists, target.isHittable {
+        for _ in 0..<40 {
+            let frame = container.frame
+            if target.exists, !target.frame.isEmpty, frame.contains(target.frame), target.isHittable {
                 return
             }
-            container.swipeUp(velocity: .slow)
+            let center = container.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            let pullDown = target.exists && !target.frame.isEmpty && target.frame.minY < frame.minY
+            center.press(forDuration: 0.05, thenDragTo: center.withOffset(CGVector(dx: 0, dy: pullDown ? 120 : -120)))
         }
-        XCTAssertTrue(target.isHittable, "\(target) が画面に出ない")
+        XCTFail("\(target) が画面に出ない")
     }
 
     // MARK: - クリップボード

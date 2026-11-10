@@ -10,11 +10,15 @@
   tools/component_variants_extra.tsv     同値類の補足表(手書き)
   tools/component_fold.tsv               部品の寄せ表(手書き)
   tools/component_input_aliases.tsv      自由入力の読み替え表(手書き)
+  tools/kyoiku_kanji.tsv                 学年別漢字配当表(告示から起こした表)
+  third_party/tanos/jlpt_kanji.tsv       JLPT の級(非公式。tanos.co.uk、CC BY)
 
 出力(Packages/CorbeKit/Sources/CorbeCore/Resources/):
   KanjiIndex.tsv
     1 行 = 1 字(CJK 統合漢字 U+4E00–9FFF):
     字 TAB 部首番号 TAB 部首内画数 TAB 総画数 TAB 区点 TAB 音読み TAB 訓読み TAB 部品
+    TAB 常用(1 か空) TAB 人名用(1 か空) TAB 教育漢字の学年(1〜6 か空) TAB JLPT の級(5〜1 か空)
+    常用・人名用は Unihan の kJoyoKanji / kJinmeiyoKanji を持つ字(許容字体・異体として載る字も含む)
     並び = 部首番号 → 総画数 → 部首内画数 → コードポイント(écritu の索引と同じ)
   ComponentVariants.tsv
     1 行 = 1 部首: 部首番号 TAB 代表字 TAB 異体の形(半角空白区切り)
@@ -37,6 +41,8 @@ BUSHU_PATH = RESOURCES / "bushu.plist"
 EXTRA_PATH = ROOT / "tools/component_variants_extra.tsv"
 FOLD_PATH = ROOT / "tools/component_fold.tsv"
 ALIASES_PATH = ROOT / "tools/component_input_aliases.tsv"
+KYOIKU_PATH = ROOT / "tools/kyoiku_kanji.tsv"
+JLPT_PATH = ROOT / "third_party/tanos/jlpt_kanji.tsv"
 INDEX_OUT = RESOURCES / "KanjiIndex.tsv"
 VARIANTS_OUT = RESOURCES / "ComponentVariants.tsv"
 SUPPLEMENT_OUT = RESOURCES / "RadicalSupplementEquivalents.tsv"
@@ -305,6 +311,18 @@ class Expander:
             return
         self.walk(subtree, position, path | {node}, out)
 
+# 「字 TAB 値」の表(# 行は注記)。値は read_value で変換する
+def read_char_table(path, read_value):
+    table = {}
+    for line in require(path).read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        char, value = line.split("\t")
+        if len(char) != 1 or ord(char) not in URO or char in table:
+            sys.exit(f"{path.name}: 字が不正か重複しています: {line}")
+        table[char] = read_value(value)
+    return table
+
 def is_katakana(text):
     return all("ァ" <= ch <= "ヶ" or ch == "ー" for ch in text)
 
@@ -329,6 +347,13 @@ def main():
     total_strokes = read_unihan("Unihan_IRGSources.txt", "kTotalStrokes")
     jis = read_unihan("Unihan_OtherMappings.txt", "kJis0")
     readings = read_unihan("Unihan_Readings.txt", "kJapanese")
+    joyo = read_unihan("Unihan_OtherMappings.txt", "kJoyoKanji")
+    jinmeiyo = read_unihan("Unihan_OtherMappings.txt", "kJinmeiyoKanji")
+    grades = read_char_table(KYOIKU_PATH, lambda value: int(value))
+    jlpt = read_char_table(JLPT_PATH, lambda value: int(value.removeprefix("N")))
+    # 学年別漢字配当表の学年ごとの字数(1〜6 年、計 1,026)
+    if [list(grades.values()).count(grade) for grade in range(1, 7)] != [80, 160, 200, 202, 193, 191]:
+        sys.exit("kyoiku_kanji.tsv の字数が学年別漢字配当表と合いません")
 
     rows = []
     for cp in URO:
@@ -347,12 +372,19 @@ def main():
         on = " ".join(word for word in words if is_katakana(word))
         kun = " ".join(word for word in words if not is_katakana(word))
         components = " ".join(expander.tokens(chr(cp)))
-        rows.append((radical, total, strokes, cp, kuten, on, kun, components))
+        char = chr(cp)
+        status = (
+            "1" if cp in joyo else "",
+            "1" if cp in jinmeiyo else "",
+            str(grades.get(char, "")),
+            str(jlpt.get(char, "")),
+        )
+        rows.append((radical, total, strokes, cp, kuten, on, kun, components, status))
 
     rows.sort(key=lambda row: row[:4])
     lines = [
-        f"{chr(cp)}\t{radical}\t{strokes}\t{total}\t{kuten}\t{on}\t{kun}\t{components}"
-        for radical, total, strokes, cp, kuten, on, kun, components in rows
+        f"{chr(cp)}\t{radical}\t{strokes}\t{total}\t{kuten}\t{on}\t{kun}\t{components}\t" + "\t".join(status)
+        for radical, total, strokes, cp, kuten, on, kun, components, status in rows
     ]
     INDEX_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
