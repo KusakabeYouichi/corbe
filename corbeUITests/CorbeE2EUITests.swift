@@ -174,6 +174,33 @@ final class CorbeE2EUITests: XCTestCase {
         let gapAcrossStrokes = frames[2].minY - frames[1].maxY
         XCTAssertEqual(gapAcrossStrokes, gapWithinStrokes, accuracy: 0.5, "区切りで項目の間隔が変わる: \(frames)")
         XCTAssertEqual(frames[3].minY - frames[2].maxY, gapWithinStrokes, accuracy: 0.5)
+        // 画数は線(口 の上端)の下に書く
+        let label = element("componentFormStroke.0.3", in: app).frame
+        XCTAssertGreaterThanOrEqual(label.minY, frames[2].minY, "3画 が線の上にはみ出している: \(label) / \(frames[2])")
+        XCTAssertLessThan(label.maxY, frames[2].midY, "3画 が 口 の上端の近くに無い: \(label) / \(frames[2])")
+    }
+
+    func testG13_AucunAtTopClearsRadical() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        selectRadical(0, "木 き", app: app)
+        XCTAssertTrue(kanji("村", app: app).waitForExistence(timeout: 5), "偏 木 で 村 が出ない")
+
+        app.buttons["componentForm.0"].firstMatch.tap()
+        let list = element("componentFormList.0", in: app)
+        XCTAssertTrue(list.waitForExistence(timeout: 5), "部首の一覧が開かない")
+        let none = app.buttons["componentFormNone.0"].firstMatch
+        XCTAssertTrue(none.waitForExistence(timeout: 5), "Aucun が無い")
+        XCTAssertEqual(none.label, "Aucun")
+        // 一覧の先頭(部首の最初の項目より上)
+        let first = list.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'componentFormItem.0.'")).firstMatch
+        XCTAssertLessThan(none.frame.maxY, first.frame.minY + 0.5, "Aucun が先頭に無い")
+
+        none.tap()
+        XCTAssertTrue(list.waitForNonExistence(timeout: 5), "Aucun で一覧が閉じない")
+        XCTAssertEqual(app.buttons["componentForm.0"].firstMatch.label, "選択", "未選択の表示に戻らない")
+        XCTAssertTrue(element("emptyHint", in: app).waitForExistence(timeout: 5), "全行が空のヒントに戻らない")
+        XCTAssertFalse(kanji("村", app: app).exists, "前の結果が残っている")
     }
 
     func testE3_LongPressShowsDetailWithoutCopying() {
