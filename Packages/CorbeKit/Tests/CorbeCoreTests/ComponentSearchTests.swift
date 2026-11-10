@@ -5,7 +5,7 @@ import Testing
 // c01-tests.md の B(生成済みの索引・同値類を読む実データの検索)
 @Suite("ComponentSearch(実データ)")
 struct ComponentSearchTests {
-    @Test("B1 [偏 木][旁 寸] と [指定なし 木][指定なし 寸] は 村 を含む")
+    @Test("B1 [偏 木][旁 寸] と [texte libre 木][texte libre 寸] は 村 を含む")
     func muraByHenAndTsukuri() {
         #expect(Bundled.characters((.hen, "木"), (.tsukuri, "寸")).contains("村"))
         #expect(Bundled.characters((.unspecified, "木"), (.unspecified, "寸")).contains("村"))
@@ -64,7 +64,7 @@ struct ComponentSearchTests {
         #expect(Bundled.characters((.kamae, "囗")).contains("国"))
     }
 
-    @Test("B7 指定なし 可 は 河 に当たり 司 に当たらない。指定なし 寺 は 封 に当たらない")
+    @Test("B7 texte libre 可 は 河 に当たり 司 に当たらない。texte libre 寺 は 封 に当たらない")
     func unspecifiedDoesNotMatchLookalikes() {
         let ka = Bundled.characters((.unspecified, "可"))
 
@@ -129,7 +129,7 @@ struct ComponentSearchTests {
         #expect(kangxi == Bundled.characters((.unspecified, "人")))
     }
 
-    @Test("B15 指定なし 木 は 木 自身を含み、偏 木 は含まない")
+    @Test("B15 texte libre 木 は 木 自身を含み、偏 木 は含まない")
     func characterItselfMatchesOnlyUnspecified() {
         #expect(Bundled.characters((.unspecified, "木")).contains("木"))
         #expect(!Bundled.characters((.hen, "木")).contains("木"))
@@ -173,7 +173,7 @@ struct ComponentSearchTests {
         #expect(result.entries.isEmpty)
     }
 
-    @Test("B20 IDS の ⺝ はビルド時に 月 へ寄せるので [脚 月] は 育 に当たり、対応のある Supplement の字は部品に残らない")
+    @Test("B20 IDS の ⺝ はビルド時に 月 へ寄せるので [脚 月] は 育 に当たり、Supplement の字は ⺀ ⺈ だけが部品に残る")
     func supplementComponentsAreFoldedAtBuildTime() {
         let remaining = Set(Bundled.index.entries.flatMap { entry in
             entry.components.map(\.component).filter { component in
@@ -182,8 +182,9 @@ struct ComponentSearchTests {
         })
 
         #expect(Bundled.characters((.ashi, "月")).contains("育"))
-        // ⺀(CJK RADICAL REPEAT)は EquivalentUnifiedIdeograph に対応が無いので残る
-        #expect(remaining == ["⺀"])
+        // ⺀(CJK RADICAL REPEAT)は EquivalentUnifiedIdeograph に対応が無いので残る。
+        // ⺈(ク の形)は読み替え表で探すため寄せずに残す。⺍ も寄せないが、選んだ IDS には現れない(ツ の形は 𭕄 で書かれる)
+        #expect(remaining == ["⺀", "⺈"])
     }
 
     @Test("B21 𤣩 はビルド時に 王 へ寄せるので [偏 王] と [偏 玉] は 球 に当たる")
@@ -191,11 +192,66 @@ struct ComponentSearchTests {
         #expect(Bundled.characters((.hen, "王")).contains("球"))
         #expect(Bundled.characters((.hen, "玉")).contains("球"))
     }
+
+    @Test("H1 texte libre の片仮名 マ ナ ツ ク は、その形の部品を持つ字に当たる")
+    func katakanaShapesFindComponents() {
+        #expect(Set(Bundled.characters((.unspecified, "マ"))).isSuperset(of: ["予", "勇", "通"]))
+        #expect(Set(Bundled.characters((.unspecified, "ナ"))).isSuperset(of: ["左", "右", "有"]))
+        #expect(Set(Bundled.characters((.unspecified, "ツ"))).isSuperset(of: ["単", "巣", "労", "学"]))
+        #expect(Set(Bundled.characters((.unspecified, "ク"))).isSuperset(of: ["負", "争", "急"]))
+    }
+
+    @Test("H2 texte libre 尚 は 龸 𫩠 と書かれた 常 賞 堂 掌 にも、尚 そのものを持つ字にも当たる")
+    func shouFindsVariantShapes() {
+        let shou = Set(Bundled.characters((.unspecified, "尚")))
+
+        #expect(shou.isSuperset(of: ["常", "賞", "堂", "掌"]))
+        #expect(shou.isSuperset(of: ["躺", "緔"]))
+    }
+
+    @Test("H3 ひらがな ま は使えない部品で、半角 ｸ は 全角 ク と同じ結果")
+    func hiraganaIsUnusableAndHalfwidthIsNormalized() {
+        let hiragana = Bundled.componentSearch.search([ComponentQueryRow(position: .unspecified, text: "ま")])
+        let halfwidth = Bundled.characters((.unspecified, "ｸ"))
+
+        #expect(hiragana.rows == [.unusable])
+        #expect(hiragana.entries.isEmpty)
+        #expect(halfwidth.contains("負"))
+        #expect(halfwidth == Bundled.characters((.unspecified, "ク")))
+    }
+
+    @Test("H4 1 行に マ力 と入れると AND で、勇 に当たり 予 に当たらない")
+    func aliasIsAndedWithOtherCharacters() {
+        let result = Bundled.characters((.unspecified, "マ力"))
+
+        #expect(result.contains("勇"))
+        #expect(!result.contains("予"))
+    }
+
+    @Test("H5 入力した ⺈ は 刀 へ寄せず ⺈ で照合するので、負 争 急 に当たり 刀 そのものには当たらない")
+    func typedKuShapeMatchesItself() {
+        let typed = Bundled.characters((.unspecified, "\u{2E88}"))
+
+        #expect(Set(typed).isSuperset(of: ["負", "争", "急"]))
+        #expect(!typed.contains("刀"))
+    }
+
+    @Test("H5 ⺈ は 刀 へ寄せないので [冠 刀] は 負 に当たらない")
+    func kuShapeIsNotFoldedToKatana() {
+        #expect(!Bundled.characters((.kanmuri, "刀")).contains("負"))
+    }
 }
 
 // 照合の規則を小さな合成データで確かめる
 @Suite("ComponentSearch(規則)")
 struct ComponentSearchRuleTests {
+    @Test("読み替え表の照合する部品に漢字でない字(かな)があれば、その行を読み込みエラーにする")
+    func aliasTargetMustBeHanComponent() {
+        #expect(throws: CorbeDataError.malformedLine(file: "ComponentInputAliases.tsv", line: 2)) {
+            try ComponentInputParser(contents: "", aliasContents: "マ\t龴\nク\tく")
+        }
+    }
+
     // 甲 = 偏 水 / 乙 = 偏 氵 / 丙 = 脚 水 / 丁 = 分解なし
     private static let search = ComponentSearch(
         index: KanjiIndex(entries: [
@@ -242,7 +298,7 @@ struct ComponentSearchRuleTests {
         #expect(Self.characters([ComponentQueryRow(position: .ashi, text: "水")]) == ["丙"])
     }
 
-    @Test("分解の無い字は 指定なし で自分自身に一致するときだけ出る")
+    @Test("分解の無い字は texte libre で自分自身に一致するときだけ出る")
     func undecomposedCharacterMatchesItself() {
         #expect(Self.characters([ComponentQueryRow(position: .unspecified, text: "丁")]) == ["丁"])
         #expect(Self.characters([ComponentQueryRow(position: .hen, text: "丁")]) == [])

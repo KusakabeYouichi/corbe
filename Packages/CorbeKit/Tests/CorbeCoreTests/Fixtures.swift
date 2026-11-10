@@ -1,7 +1,7 @@
 import Foundation
 @testable import CorbeCore
 
-// 同梱の生成物(KanjiIndex.tsv / ComponentVariants.tsv / RadicalSupplementEquivalents.tsv / bushu.plist)を
+// 同梱の生成物(KanjiIndex.tsv / ComponentVariants.tsv / RadicalSupplementEquivalents.tsv / ComponentInputAliases.tsv / bushu.plist)を
 // 1 回だけ読んで各テストで使う
 enum Bundled {
     static let index: KanjiIndex = {
@@ -24,7 +24,7 @@ enum Bundled {
         do {
             return try ComponentInputParser.bundled()
         } catch {
-            fatalError("RadicalSupplementEquivalents.tsv を読めません: \(error)")
+            fatalError("RadicalSupplementEquivalents.tsv / ComponentInputAliases.tsv を読めません: \(error)")
         }
     }()
 
@@ -39,6 +39,8 @@ enum Bundled {
     static let componentSearch = ComponentSearch(index: index, variants: variants, parser: parser)
 
     static let readingSearch = ReadingSearch(index: index)
+
+    static let positionChoices = ComponentPositionChoices(catalog: catalog, variants: variants, index: index)
 
     static func entry(_ character: String) -> KanjiEntry? {
         index.entries.first { $0.character == character }

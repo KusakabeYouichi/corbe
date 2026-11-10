@@ -1,6 +1,6 @@
 import XCTest
 
-// c01-tests.md の E1–E8 を XCUITest で行う。
+// c01-tests.md の E1・E3–E8 と c02-tests.md の G1–G4・G6・G6b・G7・G8a/b・G9–G12 を XCUITest で行う(E2 は G3 に置き換え)。
 // クリップボードはテストランナーから UIPasteboard.general で読み書きする(régu の reguUITests と同じ)。
 // 各テストは起動し直しから始め、前のテストの状態に依存しない
 @MainActor
@@ -25,10 +25,34 @@ final class CorbeE2EUITests: XCTestCase {
         }
     }
 
-    func testE2_ComponentRowsFindMuraAndTapCopies() {
+    func testG1_LaunchShowsTexteLibreWithFreeTextOnEveryRow() {
         let app = launch()
-        setRow(0, position: "偏", text: "木", app: app)
-        setRow(1, position: "旁", text: "寸", app: app)
+
+        for index in 0..<3 {
+            XCTAssertTrue(app.buttons["componentPosition.\(index)"].firstMatch.waitForExistence(timeout: 5), "\(index) 行目の位置が無い")
+            XCTAssertEqual(app.buttons["componentPosition.\(index)"].firstMatch.label, "texte libre", "\(index) 行目が texte libre でない")
+            XCTAssertTrue(app.textFields["componentText.\(index)"].exists, "\(index) 行目に自由入力欄が無い")
+            XCTAssertFalse(element("componentForm.\(index)", in: app).exists, "\(index) 行目に部首のプルダウンがある")
+        }
+    }
+
+    func testG2_PositionHenShowsRadicalMenuInsteadOfFreeText() {
+        let app = launch()
+
+        selectPosition(0, "偏", app: app)
+
+        let form = app.buttons["componentForm.0"].firstMatch
+        XCTAssertTrue(form.waitForExistence(timeout: 5), "偏 にしても部首のプルダウンが出ない")
+        XCTAssertTrue(form.label.contains("選択"), "未選択の表示が「選択」でない: \(form.label)")
+        XCTAssertFalse(app.textFields["componentText.0"].exists, "偏 なのに自由入力欄がある")
+    }
+
+    func testG3_RadicalMenusFindMuraAndTapCopies() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        selectRadical(0, "木 き", app: app)
+        selectPosition(1, "旁", app: app)
+        selectRadical(1, "寸 すん", app: app)
         let mura = kanji("村", app: app)
         XCTAssertTrue(mura.waitForExistence(timeout: 10), "[偏 木][旁 寸] の結果に 村 が無い")
         UIPasteboard.general.string = Self.sentinel
@@ -40,11 +64,125 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertEqual(readPasteboard(), "村")
     }
 
+    func testG4_BackToTexteLibreShowsEmptyFreeText() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        selectRadical(0, "木 き", app: app)
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'kanji.'")).firstMatch.waitForExistence(timeout: 10))
+
+        selectPosition(0, "texte libre", app: app)
+
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5), "texte libre に戻しても自由入力欄が出ない")
+        XCTAssertFalse(element("componentForm.0", in: app).exists, "texte libre なのに部首のプルダウンがある")
+        XCTAssertEqual(field.value as? String, "élément (ex. 木)", "値が空でない")
+        XCTAssertTrue(element("emptyHint", in: app).waitForExistence(timeout: 5), "全行が空のヒントに戻らない")
+    }
+
+    func testG6_TappingBlankRightOfPositionLabelOpensMenu() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        let picker = app.buttons["componentPosition.0"].firstMatch
+        let title = picker.staticTexts["偏"].firstMatch
+        let form = app.buttons["componentForm.0"].firstMatch
+        XCTAssertTrue(form.waitForExistence(timeout: 5))
+        // 位置名の文字の右端より右、部首のボタンの左端より左(ラベルの余白)を押す
+        let blankMinX = title.frame.maxX
+        let blankMaxX = form.frame.minX
+        XCTAssertGreaterThan(blankMaxX - blankMinX, 20, "余白が無い")
+
+        for x in [(blankMinX + blankMaxX) / 2, blankMaxX - 3] {
+            tap(x: x, y: picker.frame.midY, app: app)
+
+            // 構 はメニューの項目にしか無い(texte libre は 2・3 行目のラベルにもある)
+            let kamae = app.buttons["構"].firstMatch
+            XCTAssertTrue(kamae.waitForExistence(timeout: 5), "ラベルの右の余白(x=\(x))で位置のメニューが開かない")
+            // 次の点を押す前にメニューを閉じる(位置は 偏 のまま。行のラベル 偏 ではなくメニューの項目を押す)
+            menuItem("偏", app: app).tap()
+            XCTAssertTrue(kamae.waitForNonExistence(timeout: 5), "位置のメニューが閉じない")
+        }
+    }
+
+    func testG6b_TappingBlankOfRadicalButtonOpensList() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        let form = app.buttons["componentForm.0"].firstMatch
+        XCTAssertTrue(form.waitForExistence(timeout: 5))
+        let placeholder = form.staticTexts["選択"].firstMatch
+        // 「選択」の文字の右端と、ボタンの右端の間(文字も矢印も無い所)を押す
+        let x = (placeholder.frame.maxX + form.frame.maxX) / 2 - 10
+
+        tap(x: x, y: form.frame.midY, app: app)
+
+        XCTAssertTrue(element("componentFormList.0", in: app).waitForExistence(timeout: 5), "部首のボタンの余白で一覧が開かない")
+    }
+
+    func testG7_PositionLabelShowsPositionIcon() {
+        let app = launch()
+
+        selectPosition(0, "偏", app: app)
+
+        XCTAssertTrue(element("componentPositionIcon.0.偏", in: app).waitForExistence(timeout: 5), "偏 のアイコンが無い")
+    }
+
+    func testG9_TexteLibreHasNoPositionIcon() {
+        let app = launch()
+        let icons = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'componentPositionIcon.'"))
+        XCTAssertTrue(app.buttons["componentPosition.0"].firstMatch.waitForExistence(timeout: 5))
+
+        XCTAssertEqual(icons.count, 0, "texte libre の行にアイコンがある")
+
+        selectPosition(0, "偏", app: app)
+        XCTAssertTrue(element("componentPositionIcon.0.偏", in: app).waitForExistence(timeout: 5), "偏 のアイコンが無い")
+        XCTAssertEqual(icons.count, 1, "texte libre の行(2・3 行目)にアイコンがある")
+    }
+
+    func testG10_FreeTextPlaceholderIsElement() {
+        let app = launch()
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+
+        XCTAssertEqual(field.placeholderValue, "élément (ex. 木)")
+    }
+
+    func testG11_RadicalListSelectsKiAndCloses() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+
+        app.buttons["componentForm.0"].firstMatch.tap()
+
+        let list = element("componentFormList.0", in: app)
+        XCTAssertTrue(list.waitForExistence(timeout: 5), "部首の一覧が開かない")
+        let ki = app.buttons["componentFormItem.0.木"].firstMatch
+        scrollUntilHittable(ki, in: list)
+        ki.tap()
+        XCTAssertTrue(list.waitForNonExistence(timeout: 5), "選んでも一覧が閉じない")
+        XCTAssertTrue(app.buttons["componentForm.0"].firstMatch.label.contains("木 き"), "ボタンに 木 が出ない")
+    }
+
+    func testG12_StrokeDividerTakesNoHeight() {
+        let app = launch()
+        selectPosition(0, "偏", app: app)
+        app.buttons["componentForm.0"].firstMatch.tap()
+        XCTAssertTrue(element("componentFormList.0", in: app).waitForExistence(timeout: 5), "部首の一覧が開かない")
+        // 亻 冫 は 2画、口 土 は 3画(冫 と 口 の間に区切りがある)
+        let frames = ["亻", "冫", "口", "土"].map { app.buttons["componentFormItem.0.\($0)"].firstMatch.frame }
+        XCTAssertTrue(element("componentFormStroke.0.3", in: app).exists, "3画 の区切りが無い")
+
+        XCTAssertEqual(Set(frames.map(\.height)).count, 1, "項目の高さが揃っていない: \(frames)")
+        let gapWithinStrokes = frames[1].minY - frames[0].maxY
+        let gapAcrossStrokes = frames[2].minY - frames[1].maxY
+        XCTAssertEqual(gapAcrossStrokes, gapWithinStrokes, accuracy: 0.5, "区切りで項目の間隔が変わる: \(frames)")
+        XCTAssertEqual(frames[3].minY - frames[2].maxY, gapWithinStrokes, accuracy: 0.5)
+    }
+
     func testE3_LongPressShowsDetailWithoutCopying() {
         let app = launch()
         UIPasteboard.general.string = Self.sentinel
-        setRow(0, position: "偏", text: "木", app: app)
-        setRow(1, position: "旁", text: "寸", app: app)
+        selectPosition(0, "偏", app: app)
+        selectRadical(0, "木 き", app: app)
+        selectPosition(1, "旁", app: app)
+        selectRadical(1, "寸 すん", app: app)
         let mura = kanji("村", app: app)
         XCTAssertTrue(mura.waitForExistence(timeout: 10))
 
@@ -131,16 +269,49 @@ final class CorbeE2EUITests: XCTestCase {
     func testE8_LandscapeKeepsInputAndFirstResultHittable() {
         let app = launch()
         XCUIDevice.shared.orientation = .landscapeLeft
+        selectPosition(0, "偏", app: app)
+        selectRadical(0, "木 き", app: app)
+        selectPosition(1, "旁", app: app)
+        selectRadical(1, "寸 すん", app: app)
+        let form = app.buttons["componentForm.1"].firstMatch
+        let first = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'kanji.'")).firstMatch
+
+        XCTAssertTrue(first.waitForExistence(timeout: 10), "結果が出ない")
+        XCTAssertTrue(form.isHittable, "横向きで部首のプルダウンが押せない")
+        XCTAssertTrue(first.isHittable, "横向きで結果の 1 字目が押せない")
+    }
+
+    func testG8a_PositionMenuOpensWhileTypingFreeText() {
+        let app = launch()
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("木")
+        XCTAssertTrue(app.keyboards.firstMatch.exists, "キーボードが出ていない")
+
+        selectPosition(0, "偏", app: app)
+
+        let form = app.buttons["componentForm.0"].firstMatch
+        XCTAssertTrue(form.waitForExistence(timeout: 5), "入力中に 偏 を選べない")
+        XCTAssertTrue(form.label.contains("選択"), "位置を変えても値が空に戻らない: \(form.label)")
+    }
+
+    func testG8b_PositionMenuOpensAfterFreeTextIsEntered() {
+        let app = launch()
         let field = app.textFields["componentText.0"]
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         field.tap()
         field.typeText("木")
         dismissKeyboard(app: app)
-        let first = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'kanji.'")).firstMatch
+        XCTAssertTrue(kanji("木", app: app).waitForExistence(timeout: 10), "texte libre 木 の結果が出ない")
 
-        XCTAssertTrue(first.waitForExistence(timeout: 10), "結果が出ない")
-        XCTAssertTrue(field.isHittable, "横向きで入力欄が押せない")
-        XCTAssertTrue(first.isHittable, "横向きで結果の 1 字目が押せない")
+        selectPosition(0, "偏", app: app)
+
+        let form = app.buttons["componentForm.0"].firstMatch
+        XCTAssertTrue(form.waitForExistence(timeout: 5), "入力済みの行で 偏 を選べない")
+        XCTAssertTrue(form.label.contains("選択"), "位置を変えても値が空に戻らない: \(form.label)")
+        XCTAssertTrue(element("emptyHint", in: app).waitForExistence(timeout: 5), "全行が空のヒントに戻らない")
+        XCTAssertFalse(kanji("木", app: app).exists, "前の結果が残っている")
     }
 
     // MARK: - 起動
@@ -172,18 +343,37 @@ final class CorbeE2EUITests: XCTestCase {
         app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", fragment)).firstMatch
     }
 
-    private func setRow(_ index: Int, position: String, text: String, app: XCUIApplication) {
+    private func selectPosition(_ index: Int, _ position: String, app: XCUIApplication) {
         let picker = app.buttons["componentPosition.\(index)"].firstMatch
         XCTAssertTrue(picker.waitForExistence(timeout: 5), "\(index) 行目の位置が無い")
         picker.tap()
-        let item = app.buttons[position].firstMatch
+        let item = menuItem(position, app: app)
         XCTAssertTrue(item.waitForExistence(timeout: 5), "位置のメニューに \(position) が無い")
         item.tap()
-        let field = app.textFields["componentText.\(index)"]
-        field.tap()
-        field.typeText(text)
-        XCTAssertEqual(field.value as? String, text)
-        dismissKeyboard(app: app)
+    }
+
+    // 部首の一覧の項目はラベル(「木 き」)で探す
+    private func selectRadical(_ index: Int, _ label: String, app: XCUIApplication) {
+        let button = app.buttons["componentForm.\(index)"].firstMatch
+        XCTAssertTrue(button.waitForExistence(timeout: 5), "\(index) 行目の部首のボタンが無い")
+        button.tap()
+        let list = element("componentFormList.\(index)", in: app)
+        XCTAssertTrue(list.waitForExistence(timeout: 5), "部首の一覧が開かない")
+        let item = list.buttons[label].firstMatch
+        scrollUntilHittable(item, in: list)
+        item.tap()
+        XCTAssertTrue(list.waitForNonExistence(timeout: 5), "選んでも一覧が閉じない")
+        XCTAssertTrue(button.label.contains(label), "\(index) 行目の表示が \(label) にならない: \(button.label)")
+    }
+
+    // 位置のメニューの項目。行のラベル(componentPosition.<行>)にも同じ名前があるので、それを除いて探す
+    private func menuItem(_ position: String, app: XCUIApplication) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label == %@ AND NOT (identifier BEGINSWITH 'componentPosition')", position)).firstMatch
+    }
+
+    // 画面の座標(ポイント)を押す
+    private func tap(x: CGFloat, y: CGFloat, app: XCUIApplication) {
+        app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: x, dy: y)).tap()
     }
 
     private func dismissKeyboard(app: XCUIApplication) {
@@ -197,11 +387,15 @@ final class CorbeE2EUITests: XCTestCase {
     }
 
     private func scrollUntilHittable(_ target: XCUIElement, in app: XCUIApplication) {
+        scrollUntilHittable(target, in: app.scrollViews.firstMatch)
+    }
+
+    private func scrollUntilHittable(_ target: XCUIElement, in container: XCUIElement) {
         for _ in 0..<15 {
             if target.exists, target.isHittable {
                 return
             }
-            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+            container.swipeUp(velocity: .slow)
         }
         XCTAssertTrue(target.isHittable, "\(target) が画面に出ない")
     }

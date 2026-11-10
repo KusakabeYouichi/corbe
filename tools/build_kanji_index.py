@@ -9,6 +9,7 @@
   Packages/CorbeKit/Sources/CorbeCore/Resources/bushu.plist
   tools/component_variants_extra.tsv     同値類の補足表(手書き)
   tools/component_fold.tsv               部品の寄せ表(手書き)
+  tools/component_input_aliases.tsv      自由入力の読み替え表(手書き)
 
 出力(Packages/CorbeKit/Sources/CorbeCore/Resources/):
   KanjiIndex.tsv
@@ -19,6 +20,8 @@
     1 行 = 1 部首: 部首番号 TAB 代表字 TAB 異体の形(半角空白区切り)
   RadicalSupplementEquivalents.tsv
     1 行 = CJK Radicals Supplement の字 TAB 統合漢字(入力の ⺡ を 氵 として照合するため)
+  ComponentInputAliases.tsv
+    1 行 = 入力字 TAB 照合する部品(半角空白区切り)。tools/component_input_aliases.tsv からコメントを除いて写す
 """
 import pathlib
 import plistlib
@@ -33,13 +36,21 @@ RESOURCES = ROOT / "Packages/CorbeKit/Sources/CorbeCore/Resources"
 BUSHU_PATH = RESOURCES / "bushu.plist"
 EXTRA_PATH = ROOT / "tools/component_variants_extra.tsv"
 FOLD_PATH = ROOT / "tools/component_fold.tsv"
+ALIASES_PATH = ROOT / "tools/component_input_aliases.tsv"
 INDEX_OUT = RESOURCES / "KanjiIndex.tsv"
 VARIANTS_OUT = RESOURCES / "ComponentVariants.tsv"
 SUPPLEMENT_OUT = RESOURCES / "RadicalSupplementEquivalents.tsv"
+ALIASES_OUT = RESOURCES / "ComponentInputAliases.tsv"
 
 URO = range(0x4E00, 0xA000)
 SUPPLEMENT = range(0x2E80, 0x2F00)
 STROKES = range(0x31C0, 0x31F0)
+# 部品のトークンでは統合漢字へ寄せずに元の形で残す Supplement の字。
+# ⺈(ク の形。負 争 急)と ⺍(ツ の形)は、寄せると 刀 小 と区別できず、読み替え表の ク で探せなくなる。
+# 入力側の扱いは KEEP_SUPPLEMENT_INPUT を参照
+KEEP_SUPPLEMENT = {"\u2E88", "\u2E8D"}
+# 入力側で寄せないのは ⺈ だけ。⺍ は IDS に現れないので、入力した ⺍ は従来どおり 小 として照合する
+KEEP_SUPPLEMENT_INPUT = {"\u2E88"}
 
 # 演算子の項数。⿲ ⿳ は 3、⿾ ⿿ は 1、それ以外の ⿰〜⿽ と ㇯(減算)は 2
 ARITY = {chr(cp): 2 for cp in range(0x2FF0, 0x2FFE)}
@@ -138,6 +149,20 @@ def read_fold():
             source, target = line.rstrip("\n").split("\t")
             fold[source] = target
     return fold
+
+def read_aliases():
+    """自由入力の読み替え表: [(入力字, [照合する部品])]"""
+    aliases = []
+    with ALIASES_PATH.open(encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith("#") or not line.strip():
+                continue
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) != 2 or len(fields[0]) != 1 or not fields[1].split():
+                sys.exit(f"{ALIASES_PATH.name}: 1 行は「入力字 TAB 照合する部品(半角空白区切り)」の形で書いてください: {line!r}")
+            source, targets = fields
+            aliases.append((source, targets.split()))
+    return aliases
 
 def build_variants():
     representatives, supplements = read_radicals()
@@ -296,7 +321,7 @@ def main():
         atomic.update(variants)
 
     ids_table = read_ids()
-    fold = dict(supplement_map)
+    fold = {source: target for source, target in supplement_map.items() if source not in KEEP_SUPPLEMENT}
     fold.update(read_fold())
     expander = Expander(ids_table, atomic, fold)
 
@@ -337,14 +362,21 @@ def main():
     ]
     VARIANTS_OUT.write_text("\n".join(variant_lines) + "\n", encoding="utf-8")
 
-    supplement_lines = [f"{source}\t{target}" for source, target in sorted(supplement_map.items())]
+    # 入力側は ⺈ だけ寄せない(入力した ⺈ は、トークンに残した ⺈ で照合する)
+    supplement_lines = [
+        f"{source}\t{target}" for source, target in sorted(supplement_map.items()) if source not in KEEP_SUPPLEMENT_INPUT
+    ]
     SUPPLEMENT_OUT.write_text("\n".join(supplement_lines) + "\n", encoding="utf-8")
+
+    alias_lines = [f"{source}\t{' '.join(targets)}" for source, targets in read_aliases()]
+    ALIASES_OUT.write_text("\n".join(alias_lines) + "\n", encoding="utf-8")
 
     with_components = sum(1 for row in rows if row[7])
     with_reading = sum(1 for row in rows if row[5] or row[6])
     print(f"wrote: {INDEX_OUT.relative_to(ROOT)} ({len(rows)} 字, 部品あり {with_components}, 読みあり {with_reading})")
     print(f"wrote: {VARIANTS_OUT.relative_to(ROOT)} ({len(variant_lines)} 部首, 原子部品 {len(atomic)})")
     print(f"wrote: {SUPPLEMENT_OUT.relative_to(ROOT)} ({len(supplement_lines)} 字)")
+    print(f"wrote: {ALIASES_OUT.relative_to(ROOT)} ({len(alias_lines)} 字)")
 
 if __name__ == "__main__":
     main()

@@ -64,7 +64,7 @@ public struct KanjiIndex: Sendable {
     }
 }
 
-// パッケージに同梱した資源(KanjiIndex.tsv / ComponentVariants.tsv / RadicalSupplementEquivalents.tsv / bushu.plist)
+// パッケージに同梱した資源(KanjiIndex.tsv / ComponentVariants.tsv / RadicalSupplementEquivalents.tsv / ComponentInputAliases.tsv / bushu.plist)
 enum CorbeResources {
     static func data(named name: String, extension fileExtension: String) throws -> Data {
         try Data(contentsOf: url(named: name, extension: fileExtension))

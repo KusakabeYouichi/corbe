@@ -1,13 +1,16 @@
 import CorbeCore
 import SwiftUI
 
-// élément / corbé: [位置▼][部品テキスト] を 3 行。全行の AND で絞る。入力の変更で即時に検索し直す
+// élément / corbé: [位置▼][値] を 3 行。全行の AND で絞る。入力の変更で即時に検索し直す。
+// 値は、位置が texte libre なら自由入力、それ以外はその位置の部首のプルダウン
 struct ComponentSearchView: View {
     let library: KanjiLibrary
     let onCopy: (KanjiEntry) -> Void
 
-    @State private var rows = Array(repeating: ComponentQueryRow(), count: 3)
+    @State private var rows = Array(repeating: ComponentRowInput(), count: 3)
     @State private var result: ComponentSearchResult?
+    // 部首の一覧を開いている行
+    @State private var openRadicalList: Int?
 
     var body: some View {
         AdaptiveSearchLayout {
@@ -41,9 +44,10 @@ struct ComponentSearchView: View {
         } else {
             SearchStatusView(
                 text: """
-                位置と部品(木 氵 など)を入れると、3 行すべてに当てはまる字を出します。\
+                位置を選ぶと、その位置の部首を選べます。texte libre では部品(木 氵 など)を自由に入れられます。\
+                3 行すべてに当てはまる字を出します。\
                 部首の形(木 日 寸 など)はそれ以上分けません。\
-                にくづき は 月 で探します([偏 月] は 月 と にくづき を区別しません)。
+                にくづき は 月 で探します(偏 の 月 と にくづき は区別しません)。
                 """,
                 identifier: "emptyHint"
             )
@@ -52,22 +56,18 @@ struct ComponentSearchView: View {
 
     private func rowView(_ index: Int) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 8) {
-                Picker("位置", selection: $rows[index].position) {
-                    ForEach(ComponentPosition.allCases) { position in
-                        Text(position.title).tag(position)
-                    }
+            HStack(spacing: 0) {
+                positionMenu(index)
+                if rows[index].query.position == .unspecified {
+                    JapaneseTextField(
+                        text: $rows[index].query.text,
+                        placeholder: "élément (ex. 木)",
+                        accessibilityIdentifier: "componentText.\(index)"
+                    )
+                    .frame(height: 36)
+                } else {
+                    radicalButton(index)
                 }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                .frame(minWidth: 96, alignment: .leading)
-                .accessibilityIdentifier("componentPosition.\(index)")
-                JapaneseTextField(
-                    text: $rows[index].text,
-                    placeholder: "部品(例 木)",
-                    accessibilityIdentifier: "componentText.\(index)"
-                )
-                .frame(height: 36)
             }
             if let result, result.rows[index] == .unusable {
                 Text("部品として使えません")
@@ -78,8 +78,230 @@ struct ComponentSearchView: View {
         }
     }
 
+    // 位置のプルダウン。ラベルを右の入力欄の手前まで広げ、余白も当たり判定にする。
+    // texte libre はアイコンを付けず、ラベルの左端から書く
+    private func positionMenu(_ index: Int) -> some View {
+        let current = rows[index].query.position
+        return Menu {
+            ForEach(ComponentPosition.allCases) { position in
+                Button {
+                    selectPosition(position, row: index)
+                } label: {
+                    if let category = position.radicalCategory {
+                        Label {
+                            Text(position.title)
+                        } icon: {
+                            ComponentPositionIconImage.image(for: category)
+                        }
+                    } else {
+                        Text(position.title)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                // 幅は最も長い「texte libre」に揃える(行ごとに右の入力欄の左端がずれないように)
+                ZStack(alignment: .leading) {
+                    Text(ComponentPosition.unspecified.title)
+                        .hidden()
+                    HStack(spacing: 6) {
+                        if let category = current.radicalCategory {
+                            ComponentPositionIconView(category: category)
+                                .accessibilityIdentifier("componentPositionIcon.\(index).\(current.title)")
+                        }
+                        Text(current.title)
+                    }
+                }
+                .lineLimit(1)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption)
+                Spacer(minLength: 8)
+            }
+            .foregroundStyle(Theme.accent)
+            .frame(minHeight: 36)
+        }
+        .fixedSize(horizontal: true, vertical: false)
+        .accessibilityIdentifier("componentPosition.\(index)")
+    }
+
+    // 部首のボタン。押すと吹き出しで部首の一覧を出す。当たり判定は幅いっぱい。索引の読み込み前は押せない
+    private func radicalButton(_ index: Int) -> some View {
+        let position = rows[index].query.position
+        return Button {
+            openRadicalList = index
+        } label: {
+            HStack(spacing: 6) {
+                Text(rows[index].choice?.label ?? "選択")
+                    .lineLimit(1)
+                    .foregroundStyle(rows[index].choice == nil ? Color.secondary : Color.primary)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption)
+                    .foregroundStyle(Theme.accent)
+            }
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, minHeight: 36)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(library.loaded == nil)
+        .accessibilityIdentifier("componentForm.\(index)")
+        .popover(isPresented: radicalListBinding(index)) {
+            RadicalChoiceList(
+                choices: library.loaded?.positionChoices.choices(for: position) ?? [],
+                row: index
+            ) { choice in
+                rows[index] = ComponentRowInput(
+                    query: ComponentQueryRow(position: position, text: choice.query),
+                    choice: choice
+                )
+                openRadicalList = nil
+            }
+            .presentationCompactAdaptation(.popover)
+        }
+    }
+
+    private func radicalListBinding(_ index: Int) -> Binding<Bool> {
+        Binding {
+            openRadicalList == index
+        } set: { isPresented in
+            if !isPresented, openRadicalList == index {
+                openRadicalList = nil
+            }
+        }
+    }
+
+    // 位置と値は 1 回の代入で同時に変える(古い値のまま別の位置で検索しない)
+    private func selectPosition(_ position: ComponentPosition, row index: Int) {
+        guard rows[index].query.position != position else {
+            return
+        }
+        rows[index] = ComponentRowInput(query: ComponentQueryRow(position: position))
+    }
+
     private func search() {
-        result = library.loaded?.componentSearch.search(rows)
+        result = library.loaded?.componentSearch.search(rows.map(\.query))
+    }
+}
+
+// 1 行の入力。位置付きの行は、選んだ部首の項目と、照合に使う字(query.text)を持つ
+private struct ComponentRowInput: Equatable {
+    var query = ComponentQueryRow()
+    var choice: ComponentRadicalChoice?
+}
+
+// 部首の一覧(吹き出しの中身)。各項目は 字形(明朝・列幅を固定)と 読み。
+// 画数の区切りは項目の上端に重ねた線で描き、行の高さを取らない。線の右端に画数を小さく書く(先頭の項目にも)
+private struct RadicalChoiceList: View {
+    let choices: [ComponentRadicalChoice]
+    let row: Int
+    let onSelect: (ComponentRadicalChoice) -> Void
+
+    private static let rowHeight: CGFloat = 44
+    private static let formColumnWidth: CGFloat = 64
+    // 区切りの画数が先頭の項目の上で切れないように、一覧の上下に空ける
+    private static let verticalInset: CGFloat = 16
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(choices.enumerated()), id: \.element.id) { offset, choice in
+                    item(choice)
+                        .overlay(alignment: .top) {
+                            if offset == 0 || choices[offset - 1].strokes != choice.strokes {
+                                strokeDivider(choice.strokes)
+                            }
+                        }
+                }
+            }
+        }
+        // 余白はスクロールの内容の外側に付ける(先頭の区切りの画数が吹き出しの上端で切れないように)
+        .contentMargins(.vertical, Self.verticalInset, for: .scrollContent)
+        .frame(width: 280)
+        .frame(idealHeight: CGFloat(choices.count) * Self.rowHeight + Self.verticalInset * 2, maxHeight: 520)
+        .accessibilityIdentifier("componentFormList.\(row)")
+    }
+
+    private func item(_ choice: ComponentRadicalChoice) -> some View {
+        Button {
+            onSelect(choice)
+        } label: {
+            HStack(spacing: 0) {
+                Text(choice.forms.joined(separator: " "))
+                    .font(.custom(Theme.minchoFontName, size: 22))
+                    .lineLimit(1)
+                    .frame(width: Self.formColumnWidth, alignment: .leading)
+                Text(choice.names.joined(separator: "・"))
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 16)
+            .frame(height: Self.rowHeight)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(choice.label)
+        .accessibilityIdentifier("componentFormItem.\(row).\(choice.forms[0])")
+    }
+
+    // 高さ 0 の区切り: 線は項目の上端に重ね、画数のラベルは線の右端に、線を中心に重ねる。
+    // ラベルの所で線を止める(背景で線を隠すと、吹き出しの地と色が合わず箱に見えるため)
+    private func strokeDivider(_ strokes: Int) -> some View {
+        HStack(spacing: 4) {
+            Rectangle()
+                .fill(Color.secondary.opacity(0.4))
+                .frame(height: 0.5)
+            Text("\(strokes)画")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .fixedSize()
+                .accessibilityIdentifier("componentFormStroke.\(row).\(strokes)")
+        }
+        .padding(.trailing, 12)
+        .frame(height: 0)
+        .allowsHitTesting(false)
+    }
+}
+
+// 位置名の左のアイコン(Kangxi タブのカテゴリーと同じ図形)
+struct ComponentPositionIconView: View {
+    let category: RadicalPositionCategory
+    var color: Color = Theme.accent
+
+    var body: some View {
+        ZStack {
+            RadicalPositionIcon(category: category)
+                .fill(color)
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(color.opacity(0.6), lineWidth: 1)
+                .padding(2)
+        }
+        .frame(width: 22, height: 22)
+    }
+}
+
+// メニューの項目は Image しか描けないため、アイコンを画像にして持つ(位置ごとに 1 回だけ描く)。
+// Image(decorative:) にすると項目全体がアクセシビリティから消えるので、ラベル付きで作る
+@MainActor
+enum ComponentPositionIconImage {
+    private static var cache: [RadicalPositionCategory: Image] = [:]
+
+    static func image(for category: RadicalPositionCategory) -> Image {
+        if let image = cache[category] {
+            return image
+        }
+        let renderer = ImageRenderer(content: ComponentPositionIconView(category: category, color: .black))
+        renderer.scale = 3
+        guard let cgImage = renderer.cgImage else {
+            return Image(systemName: "square")
+        }
+        let image = Image(cgImage, scale: 3, label: Text(category.title)).renderingMode(.template)
+        cache[category] = image
+        return image
     }
 }
 

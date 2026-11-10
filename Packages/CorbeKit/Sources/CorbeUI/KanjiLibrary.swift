@@ -12,6 +12,8 @@ final class KanjiLibrary {
         let componentSearch: ComponentSearch
         let readingSearch: ReadingSearch
         let catalog: RadicalCatalog
+        // corbé タブの位置ごとの部首プルダウンの選択肢
+        let positionChoices: ComponentPositionChoices
     }
 
     private(set) var loaded: Loaded?
@@ -24,15 +26,18 @@ final class KanjiLibrary {
         let result = await Task.detached(priority: .userInitiated) { () -> Result<Loaded, Error> in
             Result {
                 let index = try KanjiIndex.bundled()
+                let variants = try ComponentVariants.bundled()
+                let catalog = try RadicalCatalog.bundled()
                 return Loaded(
                     index: index,
                     componentSearch: ComponentSearch(
                         index: index,
-                        variants: try ComponentVariants.bundled(),
+                        variants: variants,
                         parser: try ComponentInputParser.bundled()
                     ),
                     readingSearch: ReadingSearch(index: index),
-                    catalog: try RadicalCatalog.bundled()
+                    catalog: catalog,
+                    positionChoices: ComponentPositionChoices(catalog: catalog, variants: variants, index: index)
                 )
             }
         }.value
