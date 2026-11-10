@@ -5,6 +5,9 @@
 	<!-- 複数ウィンドウは無効。INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES だと
 	     INFOPLIST_KEY_UIApplicationSupportsMultipleScenes = NO を指定しても true で生成される(Xcode 27.1 で確認)。
 	     そのため生成を NO にし、ここに明示する -->
+	<!-- 暗号化は一切使わない(通信のコードが無い)。アップロードのたびの輸出コンプライアンスの質問を省く -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
