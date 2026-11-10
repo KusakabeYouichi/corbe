@@ -26,11 +26,13 @@ struct KanjiDetailView: View {
         .accessibilityIdentifier("kanjiDetail")
     }
 
-    // 「常用 ○ 教育 ○(1年) 人名用 ×」。人名用は戸籍法施行規則 別表第二の字(常用漢字は含まない)
+    // 「常用 ○  教育 ○(1年)  人名用 —」。人名用は常用漢字以外で名前に使える字(戸籍法施行規則 別表第二)なので、
+    // 常用漢字には当てはまらない(—)。名前に使えるのは 常用 ○ か 人名用 ○ の字
     static func categoryText(_ entry: KanjiEntry) -> String {
         let mark: (Bool) -> String = { $0 ? "○" : "×" }
         let school = entry.schoolGrade.map { "○(\($0)年)" } ?? "×"
-        return "常用 \(mark(entry.isJoyo))  教育 \(school)  人名用 \(mark(entry.isJinmeiyo))"
+        let jinmeiyo = entry.isJoyo ? "—" : mark(entry.isJinmeiyo)
+        return "常用 \(mark(entry.isJoyo))  教育 \(school)  人名用 \(jinmeiyo)"
     }
 
     private func row(_ title: String, value: String, identifier: String) -> some View {

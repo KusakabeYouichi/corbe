@@ -86,7 +86,8 @@ python3 tools/build_kanji_index.py   # Packages/CorbeKit/Sources/CorbeCore/Resou
 
 ## データの限界
 
-- 長押しの「人名用」は戸籍法施行規則 別表第二(Unihan kJinmeiyoKanji)の字。常用漢字は別表第二に無いので ×(名前には使える)。
+- 長押しの「人名用」は、常用漢字以外で名前に使える字(戸籍法施行規則 別表第二。Unihan kJinmeiyoKanji)。
+  名前に使えるのは 常用漢字 + 人名用漢字 なので、常用漢字の字では 人名用 を「—」(当てはまらない)と出す。
   常用は Unihan kJoyoKanji で、許容字体(剥 填 頬)と 叱(表の字形は 𠮟)も常用とする
 - 読み検索で出るのは Unihan の kJapanese を持つ字だけ(読みの無い字はどの読みでも出ない)
 - IDS は日本の字形(J)を優先して選ぶ。J 字形の IDS は にくづき を 月 で書く(肺 = ⿰月市)ため、[偏 月] は 月 と にくづき を区別しない(肉 の同値類に 月 は入れていない)。

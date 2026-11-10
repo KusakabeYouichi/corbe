@@ -220,7 +220,7 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertEqual(element("detail.kun", in: app).label, "むら")
         XCTAssertEqual(element("detail.codePoint", in: app).label, "U+6751")
         XCTAssertEqual(element("detail.kuten", in: app).label, "34-28")
-        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(1年)  人名用 ×")
+        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(1年)  人名用 —")
         XCTAssertEqual(element("detail.jlpt", in: app).label, "N2(非公式)")
         XCTAssertFalse(element("copiedBadge", in: app).exists, "長押しでコピーされた")
         XCTAssertEqual(readPasteboard(), Self.sentinel)
@@ -243,8 +243,27 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertTrue(element("detail.on", in: app).waitForExistence(timeout: 5), "詳細が出ない")
         XCTAssertEqual(element("detail.on", in: app).label, "ソン、ゾン、セン")
         XCTAssertEqual(element("detail.kun", in: app).label, "ある、たもつ、ながらえる、ぞんじる")
-        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(6年)  人名用 ×")
+        XCTAssertEqual(element("detail.category", in: app).label, "常用 ○  教育 ○(6年)  人名用 —")
         XCTAssertEqual(element("detail.jlpt", in: app).label, "N3(非公式)")
+    }
+
+    func testE3c_DetailMarksJinmeiyoOnlyKanji() {
+        let app = launch()
+        app.tabBars.buttons["japonaise"].tap()
+        let field = app.textFields["readingField.kun"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("よろず")
+        dismissKeyboard(app: app)
+        let man = kanji("萬", app: app)
+        XCTAssertTrue(man.waitForExistence(timeout: 10), "japonaise よろず の結果に 萬 が無い")
+        scrollUntilHittable(man, in: app)
+
+        man.press(forDuration: 1.0)
+
+        XCTAssertTrue(element("detail.category", in: app).waitForExistence(timeout: 5), "詳細が出ない")
+        XCTAssertEqual(element("detail.category", in: app).label, "常用 ×  教育 ×  人名用 ○")
+        XCTAssertEqual(element("detail.jlpt", in: app).label, "—")
     }
 
     func testE4_KangxiRadicalGridCopiesMura() {
