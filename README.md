@@ -60,8 +60,12 @@ swift test
 ```sh
 xcodebuild -project corbé.xcodeproj -scheme corbé \
   -destination "platform=iOS Simulator,name=corbe-iPhone,OS=26.5" \
+  -derivedDataPath build \
   CODE_SIGNING_ALLOWED=NO build
 ```
+
+コマンドラインのビルドとテストには `-derivedDataPath build` を付ける(écritu と同じ)。
+作業領域がリポジトリの `build/`(コミットしない)になり、Xcode の DerivedData と分かれるので、テストを回している間に Xcode で ⌘R してもぶつからない。
 
 名前だけで指定すると最新の iOS ランタイムから探すため、その機種が無いと失敗する。
 使えるシミュレータは `xcrun simctl list devices available` で確かめ、`name=` と `OS=` を手元の機種に合わせる。
