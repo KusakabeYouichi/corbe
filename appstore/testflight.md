@@ -9,6 +9,8 @@
 3. Organizer → Distribute App → TestFlight & App Store(または TestFlight Internal Only)
 4. App Store Connect の TestFlight で処理が終わったら、内部テスターのグループにビルドを付ける
 
+コマンドラインで上げるときは、Archive の後に `xcodebuild -exportArchive`(ExportOptions: method app-store-connect・destination upload・signingStyle automatic)を `-allowProvisioningUpdates` と App Store Connect API の **Admin 役割**のキーで実行する(キーはリポジトリの外。Admin でないキーは Cloud signing の権限が無く失敗する)。régu と同じ。1.1(1) は 2026-11-11 にこの方法で上げた。
+
 輸出コンプライアンスは Info.plist の ITSAppUsesNonExemptEncryption = NO で答え済み(質問は出ない)。
 
 ## テスト内容(What to Test)
