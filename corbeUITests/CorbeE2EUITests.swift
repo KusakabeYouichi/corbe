@@ -227,6 +227,21 @@ final class CorbeE2EUITests: XCTestCase {
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5), "完了 でキーボードが閉じない")
     }
 
+    // キーボードが出ても入力欄のフォーカスが外れない(画面の残りの高さが幅を下回っても横向きの配置に切り替えない)
+    func testG18_KeyboardStaysAfterFocusingFreeText() {
+        let app = launch()
+        let field = app.textFields["componentText.0"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5), "キーボードが出ない")
+
+        Thread.sleep(forTimeInterval: 2)
+
+        XCTAssertTrue(app.keyboards.firstMatch.exists, "キーボードがすぐ引っ込む")
+        field.typeText("木")
+        XCTAssertTrue(kanji("村", app: app).waitForExistence(timeout: 10), "入力が欄に入らない")
+    }
+
     func testG16_TappingResultsAreaClosesKeyboard() {
         let app = launch()
         let field = app.textFields["componentText.0"]

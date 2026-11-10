@@ -1,6 +1,6 @@
 import SwiftUI
 
-// 縦長は入力の下に結果、横長(幅 > 高さ)は左に入力・右に結果。
+// 縦向きは入力の下に結果、横向きは左に入力・右に結果。
 // 結果の側は、空いた所のタップとスクロールでキーボードを閉じる(字のタップはコピーとして働き、キーボードも閉じる)
 struct AdaptiveSearchLayout<Input: View, Results: View>: View {
     @ViewBuilder let input: Input
@@ -11,9 +11,18 @@ struct AdaptiveSearchLayout<Input: View, Results: View>: View {
         self.results = results()
     }
 
+    // 縦横の判定はサイズクラスで行う(iPhone の横向きは縦が compact)。表示域の幅と高さで判定すると、
+    // キーボード(と上の「完了」の帯)が出た途端に高さが幅を下回って横向きの配置へ切り替わり、
+    // 入力欄が作り直されてフォーカスが外れる(キーボードがすぐ引っ込む)
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
+
     var body: some View {
         GeometryReader { proxy in
-            if proxy.size.width > proxy.size.height {
+            if isLandscape {
                 HStack(alignment: .top, spacing: 12) {
                     ScrollView {
                         input
