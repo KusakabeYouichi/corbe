@@ -5,12 +5,12 @@
 
 ## 共通
 
-- 価格: 最低価格(régu と同じ)[要確認]
-- カテゴリー: プライマリ 辞書/辞典・その他(Reference) / セカンダリ 教育 [要確認]
+- 価格: 日本の最低価格(ユーザー指定 2026-11-11)
+- カテゴリー: プライマリ ユーティリティ(Utilities) / セカンダリ 辞書/辞典・その他(Reference)
 - 著作権: © 2026 Kusakabe Youichi
 - プライバシーポリシー: https://kusakabeyouichi.github.io/corbe/privacy.html
 - サポート URL: https://kusakabeyouichi.github.io/corbe/
-- お問い合わせ: corbé@merope.pleiades.or.jp(サポートのページに載せる)[要確認: 宛先が受信できるか]
+- お問い合わせ: corbé@merope.pleiades.or.jp(サポートのページに載せる)
 - 輸出コンプライアンス: ITSAppUsesNonExemptEncryption = NO(暗号化を一切使わない)
 - 年齢レーティング: すべて「なし」で 4+
 - App Privacy: 「データを収集しない」、トラッキングなし(通信のコードが無い。端末に保存するものも無い)
