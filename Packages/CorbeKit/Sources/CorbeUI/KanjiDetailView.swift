@@ -17,11 +17,11 @@ struct KanjiDetailView: View {
             row("区点", value: entry.kuten.isEmpty ? "—" : entry.kuten, identifier: "detail.kuten")
             row("総画数", value: entry.totalStrokes > 0 ? "\(entry.totalStrokes)画" : "—", identifier: "detail.totalStrokes")
             row("部首", value: "\(entry.radical)", identifier: "detail.radical")
-            row("区分", value: Self.categoryText(entry), identifier: "detail.category")
+            row("区分", value: Self.categoryText(entry), identifier: "detail.category", singleLine: true)
             row("JLPT", value: entry.jlptLevel.map { "N\($0)(非公式)" } ?? "—", identifier: "detail.jlpt")
         }
         .padding(16)
-        .frame(minWidth: 220, idealWidth: 260, maxWidth: 320)
+        .frame(minWidth: 220, idealWidth: 300, maxWidth: 340)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("kanjiDetail")
     }
@@ -35,7 +35,8 @@ struct KanjiDetailView: View {
         return "常用 \(mark(entry.isJoyo))  教育 \(school)  人名用 \(jinmeiyo)"
     }
 
-    private func row(_ title: String, value: String, identifier: String) -> some View {
+    // singleLine: 区分のように折り返すと読みにくい行は、小さい画面(吹き出しが狭い)では字を少し縮めて 1 行に収める
+    private func row(_ title: String, value: String, identifier: String, singleLine: Bool = false) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(title)
                 .font(.caption.weight(.semibold))
@@ -43,7 +44,9 @@ struct KanjiDetailView: View {
                 .frame(width: 44, alignment: .leading)
             Text(value)
                 .font(.callout)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(singleLine ? 1 : nil)
+                .minimumScaleFactor(singleLine ? 0.75 : 1)
+                .fixedSize(horizontal: false, vertical: !singleLine)
                 .textSelection(.enabled)
                 .accessibilityIdentifier(identifier)
         }
