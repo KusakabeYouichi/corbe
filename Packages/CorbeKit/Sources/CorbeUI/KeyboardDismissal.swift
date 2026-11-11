@@ -5,7 +5,7 @@ import UIKit
 #endif
 
 // キーボードを閉じる(入力欄のフォーカスを外す)。iOS の一般的なアプリと同じく、
-// キーボード上の「完了」・入力欄の外のタップ・結果のスクロールで閉じられるようにする
+// キーボード上の『完了』・入力欄の外のタップ・結果のスクロールで閉じられるようにする
 enum KeyboardDismissal {
     @MainActor
     static func dismiss() {
@@ -15,7 +15,7 @@ enum KeyboardDismissal {
     }
 
     #if os(iOS)
-    // UITextField のキーボードの上に出す「完了」の帯
+    // UITextField のキーボードの上に出す『完了』の帯
     @MainActor
     static func accessoryToolbar() -> UIToolbar {
         let toolbar = UIToolbar()

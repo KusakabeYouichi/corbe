@@ -14,16 +14,16 @@ ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
 scheme_paths() {
-  git ls-files -- ':(glob)**/*.xcscheme'
+    git ls-files -- ':(glob)**/*.xcscheme'
 }
 
 # 正規化前のハッシュを控える(内容が変わったファイルだけを対象にするため)
 declare -a paths=()
 declare -a before=()
 while IFS= read -r path; do
-  [[ -f "$path" ]] || continue
-  paths+=("$path")
-  before+=("$(git hash-object -- "$path")")
+    [[ -f "$path" ]] || continue
+    paths+=("$path")
+    before+=("$(git hash-object -- "$path")")
 done < <(scheme_paths)
 
 bash tools/normalize_unicode_project_names.sh
@@ -31,17 +31,17 @@ bash tools/normalize_unicode_project_names.sh
 staged_schemes="$(git diff --cached --name-only -- ':(glob)**/*.xcscheme' || true)"
 
 for i in "${!paths[@]}"; do
-  path="${paths[$i]}"
-  after="$(git hash-object -- "$path")"
+    path="${paths[$i]}"
+    after="$(git hash-object -- "$path")"
 
-  [[ "$after" != "${before[$i]}" ]] || continue
+    [[ "$after" != "${before[$i]}" ]] || continue
 
-  if printf '%s\n' "$staged_schemes" | grep -Fxq "$path"; then
-    git add -- "$path"
-    echo "[pre-commit] $path を合成形へ正規化して入れ直しました。" >&2
-  else
-    echo "[pre-commit] $path を合成形へ正規化しました(このコミットには含めません)。" >&2
-  fi
+    if printf '%s\n' "$staged_schemes" | grep -Fxq "$path"; then
+        git add -- "$path"
+        echo "[pre-commit] $path を合成形へ正規化して入れ直しました。" >&2
+    else
+        echo "[pre-commit] $path を合成形へ正規化しました(このコミットには含めません)。" >&2
+    fi
 done
 
 exit 0

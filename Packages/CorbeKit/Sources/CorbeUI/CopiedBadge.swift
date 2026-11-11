@@ -1,11 +1,16 @@
 import SwiftUI
 
-// 「✓「村」をコピーしました」の小さなカプセル(régu の CopiedBadge と同じ見た目)。表示・消去の時間は RootView が受け持つ
+// 『✓ 『村』をコピーしました』の小さなカプセル(régu の CopiedBadge と同じ見た目)。表示・消去の時間は RootView が受け持つ
 struct CopiedBadge: View {
     let character: String
 
+    // 表示・読み上げで共通の文
+    static func message(for character: String) -> String {
+        "『\(character)』をコピーしました"
+    }
+
     var body: some View {
-        Label("「\(character)」をコピーしました", systemImage: "checkmark")
+        Label(Self.message(for: character), systemImage: "checkmark")
             .font(.caption.weight(.semibold))
             .foregroundStyle(Theme.accent)
             .lineLimit(1)
@@ -21,7 +26,7 @@ struct CopiedBadge: View {
                     }
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("「\(character)」をコピーしました")
+            .accessibilityLabel(Self.message(for: character))
             .accessibilityIdentifier("copiedBadge")
     }
 }

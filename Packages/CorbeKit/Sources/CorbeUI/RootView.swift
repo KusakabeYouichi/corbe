@@ -2,7 +2,7 @@ import CorbeCore
 import SwiftUI
 
 // TabView 4 タブ: élément(corbé / Kangxi)と Lecture(chinoise / japonaise)。
-// 結果の字をタップするとクリップボードへ入れ、画面下に「「村」をコピーしました」を出す
+// 結果の字をタップするとクリップボードへ入れ、画面下に『『村』をコピーしました』を出す
 public struct RootView: View {
     enum Screen: Hashable {
         case corbe
@@ -11,7 +11,7 @@ public struct RootView: View {
         case japonaise
     }
 
-    // 「コピーしました」を出しておく時間。UI テスト(corbeUITests)用に、起動引数 -corbeUITestBadgeSeconds <秒> で延ばせる
+    // 『コピーしました』を出しておく時間。UI テスト(corbeUITests)用に、起動引数 -corbeUITestBadgeSeconds <秒> で延ばせる
     private static var badgeDuration: Duration {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
@@ -115,7 +115,7 @@ public struct RootView: View {
         withAnimation(.easeOut(duration: 0.2)) {
             copiedCharacter = character
         }
-        AccessibilityNotification.Announcement("「\(character)」をコピーしました").post()
+        AccessibilityNotification.Announcement(CopiedBadge.message(for: character)).post()
         badgeHideTask = Task {
             try? await Task.sleep(for: Self.badgeDuration)
             guard !Task.isCancelled else {

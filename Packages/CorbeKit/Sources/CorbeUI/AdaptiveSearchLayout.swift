@@ -11,8 +11,8 @@ struct AdaptiveSearchLayout<Input: View, Results: View>: View {
         self.results = results()
     }
 
-    // 縦横の判定はサイズクラスで行う(iPhone の横向きは縦が compact)。表示域の幅と高さで判定すると、
-    // キーボード(と上の「完了」の帯)が出た途端に高さが幅を下回って横向きの配置へ切り替わり、
+    // 縦横の判定はサイズクラスで行なう(iPhone の横向きは縦が compact)。表示域の幅と高さで判定すると、
+    // キーボード(と上の『完了』の帯)が出た途端に高さが幅を下回って横向きの配置へ切り替わり、
     // 入力欄が作り直されてフォーカスが外れる(キーボードがすぐ引っ込む)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 

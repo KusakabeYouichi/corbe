@@ -2,29 +2,29 @@
 """corbé の索引を Unihan / UCD / BabelStone IDS から生成する。
 
 入力(先に bash tools/fetch_sources.sh):
-  tmp/sources/unihan/Unihan_*.txt        kRSUnicode / kTotalStrokes / kJis0 / kJapanese
-  tmp/sources/CJKRadicals.txt            部首番号 → 代表字・CJK Radicals Supplement の字
-  tmp/sources/EquivalentUnifiedIdeograph.txt
-  third_party/babelstone/IDS.TXT         部品の分解(コミット済みの版)
-  Packages/CorbeKit/Sources/CorbeCore/Resources/bushu.plist
-  tools/component_variants_extra.tsv     同値類の補足表(手書き)
-  tools/component_fold.tsv               部品の寄せ表(手書き)
-  tools/component_input_aliases.tsv      自由入力の読み替え表(手書き)
-  tools/kyoiku_kanji.tsv                 学年別漢字配当表(告示から起こした表)
-  third_party/tanos/jlpt_kanji.tsv       JLPT の級(非公式。tanos.co.uk、CC BY)
+    tmp/sources/unihan/Unihan_*.txt        kRSUnicode / kTotalStrokes / kJis0 / kJapanese
+    tmp/sources/CJKRadicals.txt            部首番号 → 代表字・CJK Radicals Supplement の字
+    tmp/sources/EquivalentUnifiedIdeograph.txt
+    third_party/babelstone/IDS.TXT         部品の分解(コミット済みの版)
+    Packages/CorbeKit/Sources/CorbeCore/Resources/bushu.plist
+    tools/component_variants_extra.tsv     同値類の補足表(手書き)
+    tools/component_fold.tsv               部品の寄せ表(手書き)
+    tools/component_input_aliases.tsv      自由入力の読み替え表(手書き)
+    tools/kyoiku_kanji.tsv                 学年別漢字配当表(告示から起こした表)
+    third_party/tanos/jlpt_kanji.tsv       JLPT の級(非公式。tanos.co.uk、CC BY)
 
 出力(Packages/CorbeKit/Sources/CorbeCore/Resources/):
-  KanjiIndex.tsv
+    KanjiIndex.tsv
     1 行 = 1 字(CJK 統合漢字 U+4E00–9FFF):
     字 TAB 部首番号 TAB 部首内画数 TAB 総画数 TAB 区点 TAB 音読み TAB 訓読み TAB 部品
     TAB 常用(1 か空) TAB 人名用(1 か空) TAB 教育漢字の学年(1〜6 か空) TAB JLPT の級(5〜1 か空)
     常用・人名用は Unihan の kJoyoKanji / kJinmeiyoKanji を持つ字(許容字体・異体として載る字も含む)
     並び = 部首番号 → 総画数 → 部首内画数 → コードポイント(écritu の索引と同じ)
-  ComponentVariants.tsv
+    ComponentVariants.tsv
     1 行 = 1 部首: 部首番号 TAB 代表字 TAB 異体の形(半角空白区切り)
-  RadicalSupplementEquivalents.tsv
+    RadicalSupplementEquivalents.tsv
     1 行 = CJK Radicals Supplement の字 TAB 統合漢字(入力の ⺡ を 氵 として照合するため)
-  ComponentInputAliases.tsv
+    ComponentInputAliases.tsv
     1 行 = 入力字 TAB 照合する部品(半角空白区切り)。tools/component_input_aliases.tsv からコメントを除いて写す
 """
 import pathlib
@@ -165,7 +165,7 @@ def read_aliases():
                 continue
             fields = line.rstrip("\n").split("\t")
             if len(fields) != 2 or len(fields[0]) != 1 or not fields[1].split():
-                sys.exit(f"{ALIASES_PATH.name}: 1 行は「入力字 TAB 照合する部品(半角空白区切り)」の形で書いてください: {line!r}")
+                sys.exit(f"{ALIASES_PATH.name}: 1 行は『入力字 TAB 照合する部品(半角空白区切り)』の形で書いてください: {line!r}")
             source, targets = fields
             aliases.append((source, targets.split()))
     return aliases
@@ -234,7 +234,8 @@ def tokenize(sequence):
             tokens.append(UNENCODED)
             index = end + 1
             continue
-        tokens.append(UNENCODED if char == "？" else char)
+        # U+FF1F(全角の疑問符)は IDS で符号の無い部品を表わす
+        tokens.append(UNENCODED if char == "\uff1f" else char)
         index += 1
     return tokens
 
@@ -311,7 +312,7 @@ class Expander:
             return
         self.walk(subtree, position, path | {node}, out)
 
-# 「字 TAB 値」の表(# 行は注記)。値は read_value で変換する
+# 『字 TAB 値』の表(# 行は注記)。値は read_value で変換する
 def read_char_table(path, read_value):
     table = {}
     for line in require(path).read_text(encoding="utf-8").splitlines():

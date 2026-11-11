@@ -24,15 +24,15 @@ struct ReadingSearchView: View {
 
     var body: some View {
         AdaptiveSearchLayout {
-            // 部品の入力欄と同じ欄(日本語キーボードで開き、キーボードの上に「完了」を出す)
+            // 部品の入力欄と同じ欄(日本語キーボードで開き、キーボードの上に『完了』を出す)
             JapaneseTextField(
                 text: $input,
                 placeholder: kind == .on ? "音読み(例 そん)" : "訓読み(例 むら)",
                 accessibilityIdentifier: "readingField.\(identifierSuffix)"
             )
-                .frame(height: 36)
-                .padding(12)
-                .modifier(CardBackground())
+            .frame(height: 36)
+            .padding(12)
+            .modifier(CardBackground())
         } results: {
             resultsView
         }
@@ -48,7 +48,7 @@ struct ReadingSearchView: View {
         } else if ReadingSearch.normalize(input, kind: kind) == nil {
             SearchStatusView(text: hint, identifier: "emptyHint")
         } else if entries.isEmpty {
-            SearchStatusView(text: "当てはまる字がありません", identifier: "noResults")
+            SearchStatusView.noResults
         } else {
             KanjiResultGrid(items: StrokeListing.characterListItems(entries: entries), onCopy: onCopy)
         }

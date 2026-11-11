@@ -1,6 +1,6 @@
 # 自由入力(texte libre)の読み替え表。tools/build_kanji_index.py が Packages/CorbeKit/Sources/CorbeCore/Resources/ComponentInputAliases.tsv に写す。
 # 1 行 = 入力字 TAB 照合する部品(半角空白区切り)。入力字はその部品のどれかを持つ字に当たる(OR)。
-# 書くのは「この部品はこの形をしている」という事実だけ。片仮名は全角で書く(半角ｶﾅは NFKC で全角になる)。ひらがなは書かない(読みと紛れるため)
+# 書くのは『この部品はこの形をしている』という事実だけ。片仮名は全角で書く(半角カタカナは NFKC で全角になる)。ひらがなは書かない(読みと紛れるため)
 マ	龴
 ク	⺈ 𠂊
 ツ	𭕄

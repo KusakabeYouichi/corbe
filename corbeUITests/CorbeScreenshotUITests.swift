@@ -2,10 +2,11 @@ import XCTest
 
 // App Store のスクリーンショットを撮る(テストではない)。環境変数 CORBE_SCREENSHOT_DIR があるときだけ動く。
 // xcodebuild には TEST_RUNNER_CORBE_SCREENSHOT_DIR=<出力先> で渡す(手順は appstore/screenshots-plan.md)
+@MainActor
 final class CorbeScreenshotUITests: XCTestCase {
     private var outputDirectory: URL!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         guard let path = ProcessInfo.processInfo.environment["CORBE_SCREENSHOT_DIR"], !path.isEmpty else {
             throw XCTSkip("CORBE_SCREENSHOT_DIR が無いので撮らない")
@@ -68,48 +69,10 @@ final class CorbeScreenshotUITests: XCTestCase {
 
     // MARK: - 補助
 
-    private func launch() -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launch()
-        let loading = element("loadingIndicator", in: app)
-        let deadline = Date().addingTimeInterval(15)
-        while loading.exists, Date() < deadline {
-            Thread.sleep(forTimeInterval: 0.2)
-        }
-        return app
-    }
-
     private func save(_ name: String, app: XCUIApplication) throws {
         // 吹き出しやスクロールの動きが止まるのを待つ
         Thread.sleep(forTimeInterval: 1.0)
         let data = XCUIScreen.main.screenshot().pngRepresentation
         try data.write(to: outputDirectory.appendingPathComponent("\(name).png"))
-    }
-
-    private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
-        app.descendants(matching: .any)[identifier].firstMatch
-    }
-
-    private func selectPosition(_ index: Int, _ position: String, app: XCUIApplication) {
-        let picker = app.buttons["componentPosition.\(index)"].firstMatch
-        XCTAssertTrue(picker.waitForExistence(timeout: 5))
-        picker.tap()
-        let item = app.buttons.matching(NSPredicate(format: "label == %@ AND NOT (identifier BEGINSWITH 'componentPosition')", position)).firstMatch
-        XCTAssertTrue(item.waitForExistence(timeout: 5))
-        item.tap()
-    }
-
-    private func selectRadical(_ index: Int, _ label: String, app: XCUIApplication) {
-        app.buttons["componentForm.\(index)"].firstMatch.tap()
-        let list = element("componentFormList.\(index)", in: app)
-        XCTAssertTrue(list.waitForExistence(timeout: 5))
-        let item = list.buttons[label].firstMatch
-        for _ in 0..<40 where !(item.exists && !item.frame.isEmpty && list.frame.contains(item.frame)) {
-            let center = list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-            let pullDown = item.exists && !item.frame.isEmpty && item.frame.minY < list.frame.minY
-            center.press(forDuration: 0.05, thenDragTo: center.withOffset(CGVector(dx: 0, dy: pullDown ? 120 : -120)))
-        }
-        item.tap()
-        XCTAssertTrue(list.waitForNonExistence(timeout: 5))
     }
 }

@@ -67,7 +67,7 @@ struct ComponentPositionChoicesTests {
         }
     }
 
-    @Test("F3b 脚 の 心 と ⺗ は 1 項目「⺗ 心 したごころ・こころ」で、照合は 心")
+    @Test("F3b 脚 の 心 と ⺗ は 1 項目『⺗ 心 したごころ・こころ』で、照合は 心")
     func ashiMergesKokoroForms() throws {
         let kokoro = try choice(.ashi, radical: 61)
 

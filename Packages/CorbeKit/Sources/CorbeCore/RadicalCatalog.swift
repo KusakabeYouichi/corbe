@@ -4,7 +4,7 @@ import Observation
 // écritu の KanjiRadicalCatalog / RadicalPickerState から流用(Kangxi タブ)。
 // 部首の位置カテゴリー(偏/旁/冠/脚/垂/繞/構/独立)と、その字形一覧。
 // 分類の源泉は bushu.plist(écritu references/ から写したもの)。1字形が複数カテゴリーに
-// 属してよく、位置を持たない部首は「独立」に入る。
+// 属してよく、位置を持たない部首は『独立』に入る。
 public enum RadicalPositionCategory: String, CaseIterable, Identifiable, Sendable {
     case hen = "偏"
     case tsukuri = "旁"

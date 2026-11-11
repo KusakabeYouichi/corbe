@@ -72,7 +72,7 @@ struct KanjiResultGrid: View {
     }
 }
 
-// 総画数の区切り(タップできない)。カプセル+輪郭線+「総N画」
+// 総画数の区切り(タップできない)。カプセル+輪郭線+『総N画』
 private struct TotalStrokeMarker: View {
     let total: Int
 
@@ -96,7 +96,7 @@ private struct TotalStrokeMarker: View {
 }
 
 // 字形の有無(écritu の KanjiGlyphAvailability と同じ判定)。表示中のセルぶんだけ
-// 「ヒラギノ明朝にグリフがあるか」を確かめる。無い字は別フォントで描かれるため色を変えて区別する
+// 『ヒラギノ明朝にグリフがあるか』を確かめる。無い字は別フォントで描かれるため色を変えて区別する
 @MainActor
 enum KanjiGlyphAvailability {
     private static let mincho = CTFontCreateWithName(Theme.minchoFontName as CFString, 16, nil)

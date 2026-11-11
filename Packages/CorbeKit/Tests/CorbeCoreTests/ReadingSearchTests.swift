@@ -9,13 +9,13 @@ struct ReadingSearchTests {
         Bundled.readingSearch.search(input, kind: kind).map(\.character)
     }
 
-    @Test("C1 chinoise は そん・ソン・ｿﾝ で同じ結果になり、村 を含む")
+    @Test("C1 chinoise は そん・ソン・半角カタカナのソン で同じ結果になり、村 を含む")
     func onReadingAcceptsHiraganaKatakanaAndHalfwidth() {
         let hiragana = characters("そん", .on)
 
         #expect(hiragana.contains("村"))
         #expect(characters("ソン", .on) == hiragana)
-        #expect(characters("ｿﾝ", .on) == hiragana)
+        #expect(characters("\u{FF7F}\u{FF9D}", .on) == hiragana)
     }
 
     @Test("C2 chinoise は前方一致(そ で 村)")

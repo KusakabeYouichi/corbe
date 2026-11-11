@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SCHEME_PATH="$ROOT_DIR/corbé.xcodeproj/xcshareddata/xcschemes/corbé.xcscheme"
 
 if [[ ! -f "$SCHEME_PATH" ]]; then
-  exit 0
+    exit 0
 fi
 
 # Keep scheme identifiers in NFC/precomposed form to avoid noisy diffs (écritu と同じ対策)

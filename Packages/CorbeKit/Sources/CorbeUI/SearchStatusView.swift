@@ -15,6 +15,10 @@ struct SearchStatusView: View {
         return SearchStatusView(text: "索引を読み込めませんでした(\(error))", identifier: "loadError")
     }
 
+    static var noResults: SearchStatusView {
+        SearchStatusView(text: "当てはまる字がありません", identifier: "noResults")
+    }
+
     var body: some View {
         VStack(spacing: 8) {
             if showsProgress {

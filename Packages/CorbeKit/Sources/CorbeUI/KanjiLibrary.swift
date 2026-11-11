@@ -3,7 +3,7 @@ import Foundation
 import Observation
 
 // 同梱の索引・同値類・部首カタログ。起動直後にバックグラウンドで読み、読み終わるまでは nil
-// (各タブは「読み込み中」を出し、読み終わったら最新の入力で検索し直す)
+// (各タブは『読み込み中』を出し、読み終わったら最新の入力で検索し直す)
 @Observable
 @MainActor
 final class KanjiLibrary {

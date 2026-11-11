@@ -209,10 +209,10 @@ struct ComponentSearchTests {
         #expect(shou.isSuperset(of: ["躺", "緔"]))
     }
 
-    @Test("H3 ひらがな ま は使えない部品で、半角 ｸ は 全角 ク と同じ結果")
+    @Test("H3 ひらがな ま は使えない部品で、半角カタカナの ク(U+FF78)は 全角 ク と同じ結果")
     func hiraganaIsUnusableAndHalfwidthIsNormalized() {
         let hiragana = Bundled.componentSearch.search([ComponentQueryRow(position: .unspecified, text: "ま")])
-        let halfwidth = Bundled.characters((.unspecified, "ｸ"))
+        let halfwidth = Bundled.characters((.unspecified, "\u{FF78}"))
 
         #expect(hiragana.rows == [.unusable])
         #expect(hiragana.entries.isEmpty)
@@ -319,7 +319,7 @@ struct ComponentSearchRuleTests {
 
         #expect(parser.parse(" \u{2F08} \u{2EA1}\u{3000}木 ") == .components(["人", "氵", "木"]))
         #expect(parser.parse("　 ") == .empty)
-        #expect(parser.parse("木Ａ") == .unusable)
+        #expect(parser.parse("木\u{FF21}") == .unusable)
         #expect(parser.parse("ア") == .unusable)
     }
 }

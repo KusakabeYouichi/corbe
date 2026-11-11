@@ -55,7 +55,7 @@ public struct ComponentQueryRow: Sendable, Equatable {
     }
 }
 
-// 行ごとの解釈。空の行は無視、漢字でない部品を含む行は「部品として使えません」
+// 行ごとの解釈。空の行は無視、漢字でない部品を含む行は『部品として使えません』
 public enum ComponentRowState: Sendable, Equatable {
     case empty
     case components([String])
@@ -75,7 +75,7 @@ public struct ComponentSearchResult: Sendable, Equatable {
 
 // 部品テキストの解釈: NFKC → 空白を除いた各文字を部品にする → CJK Radicals Supplement を統合漢字へ移す
 // (⺡ は NFKC で変わらないため EquivalentUnifiedIdeograph の対応表で移す)。
-// 読み替え表にある入力字は、そのまま 1 つの部品として受け、照合はその表の部品のどれか(OR)で行う
+// 読み替え表にある入力字は、そのまま 1 つの部品として受け、照合はその表の部品のどれか(OR)で行なう
 public struct ComponentInputParser: Sendable {
     private let supplementEquivalents: [Unicode.Scalar: String]
     private let aliases: [String: [String]]

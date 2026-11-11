@@ -33,8 +33,8 @@ corbéのバージョン番号は1.1スタートとし、ビルド番号はそ�
 ## 実装
 
 - `MARKETING_VERSION` を 1.0 → 1.1(project.pbxproj の 4 構成)。`CURRENT_PROJECT_VERSION`(ビルド番号)は 1 のまま、以後バージョンと別に上げる(régu と同じ運用。README に記載)
-- ライセンス画面の先頭(corbé の節)に「バージョン 1.1(ビルド 1)」。値は `Bundle.main` の `CFBundleShortVersionString` / `CFBundleVersion` から読む(番号を上げれば表示も変わる)。読めないとき(Preview や macOS の swift build)は「?」
-- UI テスト E6(`testE6_LicensesShowVersionUnicodeAndBabelStone`): 表示が「バージョン <数字(.数字)*>(ビルド <数字>)」の形であることを見る。値は直書きしない(上げるたびに赤にならないように)
+- ライセンス画面の先頭(corbé の節)に『バージョン 1.1(ビルド 1)』。値は `Bundle.main` の `CFBundleShortVersionString` / `CFBundleVersion` から読む(番号を上げれば表示も変わる)。読めないとき(Preview や macOS の swift build)は『?』
+- UI テスト E6(`testE6_LicensesShowVersionUnicodeAndBabelStone`): 表示が『バージョン <数字(.数字)*>(ビルド <数字>)』の形であることを見る。値は直書きしない(上げるたびに赤にならないように)
 
 ## 検証
 

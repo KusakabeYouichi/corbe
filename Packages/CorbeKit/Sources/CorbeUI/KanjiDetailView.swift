@@ -26,7 +26,7 @@ struct KanjiDetailView: View {
         .accessibilityIdentifier("kanjiDetail")
     }
 
-    // 「常用 ○  教育 ○(1年)  人名用 —」。人名用は常用漢字以外で名前に使える字(戸籍法施行規則 別表第二)なので、
+    // 『常用 ○  教育 ○(1年)  人名用 —』。人名用は常用漢字以外で名前に使える字(戸籍法施行規則 別表第二)なので、
     // 常用漢字には当てはまらない(—)。名前に使えるのは 常用 ○ か 人名用 ○ の字
     static func categoryText(_ entry: KanjiEntry) -> String {
         let mark: (Bool) -> String = { $0 ? "○" : "×" }

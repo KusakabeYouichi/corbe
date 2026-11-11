@@ -15,7 +15,7 @@ public struct ComponentRadicalChoice: Identifiable, Equatable, Sendable {
 
     public var id: Int { radical }
 
-    // 「辶 辵 しんにょう」「⺗ 心 したごころ・こころ」
+    // 『辶 辵 しんにょう』『⺗ 心 したごころ・こころ』
     public var label: String {
         (forms + [names.joined(separator: "・")]).joined(separator: " ")
     }

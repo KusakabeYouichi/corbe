@@ -33,8 +33,8 @@ adversarial:
 ## 主要な実装の詳細
 - 部首のボタン: ButtonStyle の isPressed が立った時点で一覧を開く(PressDownButtonStyle)。VoiceOver などは Button の action で開く。開くときにキーボードを閉じる
 - キーボード: 次の 4 通りで閉じる(KeyboardDismissal)
-  - 確定後の「完了」キー(既存)
-  - キーボードの上の帯の「完了」(UITextField の inputAccessoryView)
+  - 確定後の『完了』キー(既存)
+  - キーボードの上の帯の『完了』(UITextField の inputAccessoryView)
   - 結果の側の空いた所のタップ(字のタップと同時に受ける)
   - 結果のスクロール開始(scrollDismissesKeyboard(.immediately))
 - 読みのタブの欄を、corbé タブと同じ JapaneseTextField にした。SwiftUI の toolbar(.keyboard) を付けると、欄にフォーカスが入らなくなった(E5 が赤)ため。原因は未確認。結果として、読みの欄も日本語キーボードで開き、明朝体になった

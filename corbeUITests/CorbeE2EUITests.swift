@@ -1,6 +1,6 @@
 import XCTest
 
-// c01-tests.md の E1・E3–E8 と c02-tests.md の G1–G4・G6・G6b・G7・G8a/b・G9–G12 を XCUITest で行う(E2 は G3 に置き換え)。
+// c01-tests.md の E1・E3–E8 と c02-tests.md の G1–G4・G6・G6b・G7・G8a/b・G9–G12 を XCUITest で行なう(E2 は G3 に置き換え)。
 // クリップボードはテストランナーから UIPasteboard.general で読み書きする(régu の reguUITests と同じ)。
 // 各テストは起動し直しから始め、前のテストの状態に依存しない
 @MainActor
@@ -43,7 +43,7 @@ final class CorbeE2EUITests: XCTestCase {
 
         let form = app.buttons["componentForm.0"].firstMatch
         XCTAssertTrue(form.waitForExistence(timeout: 5), "偏 にしても部首のプルダウンが出ない")
-        XCTAssertTrue(form.label.contains("選択"), "未選択の表示が「選択」でない: \(form.label)")
+        XCTAssertTrue(form.label.contains("選択"), "未選択の表示が『選択』でない: \(form.label)")
         XCTAssertFalse(app.textFields["componentText.0"].exists, "偏 なのに自由入力欄がある")
     }
 
@@ -59,8 +59,8 @@ final class CorbeE2EUITests: XCTestCase {
 
         mura.tap()
 
-        XCTAssertTrue(element("copiedBadge", in: app).waitForExistence(timeout: 3), "「コピーしました」が出ない")
-        XCTAssertEqual(element("copiedBadge", in: app).label, "「村」をコピーしました")
+        XCTAssertTrue(element("copiedBadge", in: app).waitForExistence(timeout: 3), "『コピーしました』が出ない")
+        XCTAssertEqual(element("copiedBadge", in: app).label, "『村』をコピーしました")
         XCTAssertEqual(readPasteboard(), "村")
     }
 
@@ -109,7 +109,7 @@ final class CorbeE2EUITests: XCTestCase {
         let form = app.buttons["componentForm.0"].firstMatch
         XCTAssertTrue(form.waitForExistence(timeout: 5))
         let placeholder = form.staticTexts["選択"].firstMatch
-        // 「選択」の文字の右端と、ボタンの右端の間(文字も矢印も無い所)を押す
+        // 『選択』の文字の右端と、ボタンの右端の間(文字も矢印も無い所)を押す
         let x = (placeholder.frame.maxX + form.frame.maxX) / 2 - 10
 
         tap(x: x, y: form.frame.midY, app: app)
@@ -300,7 +300,7 @@ final class CorbeE2EUITests: XCTestCase {
         dismissKeyboard(app: app)
         let son = kanji("存", app: app)
         XCTAssertTrue(son.waitForExistence(timeout: 10), "chinoise ぞん の結果に 存 が無い")
-        scrollUntilHittable(son, in: app)
+        scrollUntilHittable(son, inResultsOf: app)
 
         son.press(forDuration: 1.0)
 
@@ -321,7 +321,7 @@ final class CorbeE2EUITests: XCTestCase {
         dismissKeyboard(app: app)
         let man = kanji("萬", app: app)
         XCTAssertTrue(man.waitForExistence(timeout: 10), "japonaise よろず の結果に 萬 が無い")
-        scrollUntilHittable(man, in: app)
+        scrollUntilHittable(man, inResultsOf: app)
 
         man.press(forDuration: 1.0)
 
@@ -336,15 +336,15 @@ final class CorbeE2EUITests: XCTestCase {
         element("radicalCategory.偏", in: app).tap()
         let ki = element("radicalForm.75-木", in: app)
         XCTAssertTrue(ki.waitForExistence(timeout: 10), "偏 の一覧に 木 が無い")
-        scrollUntilHittable(ki, in: app)
+        scrollUntilHittable(ki, inResultsOf: app)
         ki.tap()
         let mura = kanji("村", app: app)
-        scrollUntilHittable(mura, in: app)
+        scrollUntilHittable(mura, inResultsOf: app)
         UIPasteboard.general.string = Self.sentinel
 
         mura.tap()
 
-        XCTAssertTrue(element("copiedBadge", in: app).waitForExistence(timeout: 3), "「コピーしました」が出ない")
+        XCTAssertTrue(element("copiedBadge", in: app).waitForExistence(timeout: 3), "『コピーしました』が出ない")
         XCTAssertEqual(readPasteboard(), "村")
     }
 
@@ -358,7 +358,7 @@ final class CorbeE2EUITests: XCTestCase {
         dismissKeyboard(app: app)
         let mura = kanji("村", app: app)
         XCTAssertTrue(mura.waitForExistence(timeout: 10), "chinoise そん の結果に 村 が無い")
-        scrollUntilHittable(mura, in: app)
+        scrollUntilHittable(mura, inResultsOf: app)
         UIPasteboard.general.string = Self.sentinel
         mura.tap()
         XCTAssertEqual(readPasteboard(), "村")
@@ -371,7 +371,7 @@ final class CorbeE2EUITests: XCTestCase {
         dismissKeyboard(app: app)
         let kunMura = kanji("村", app: app)
         XCTAssertTrue(kunMura.waitForExistence(timeout: 10), "japonaise むら の結果に 村 が無い")
-        scrollUntilHittable(kunMura, in: app)
+        scrollUntilHittable(kunMura, inResultsOf: app)
         UIPasteboard.general.string = Self.sentinel
 
         kunMura.tap()
@@ -456,98 +456,14 @@ final class CorbeE2EUITests: XCTestCase {
 
     // MARK: - 起動
 
+    // コピーの表示を 5 秒出しておく(既定の 1.5 秒では確かめる前に消える)
     private func launch() -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments = ["-corbeUITestBadgeSeconds", "5"]
-        app.launch()
-        // 索引の読み込み中表示が消えるまで待つ
-        let loading = element("loadingIndicator", in: app)
-        let deadline = Date().addingTimeInterval(15)
-        while loading.exists, Date() < deadline {
-            Thread.sleep(forTimeInterval: 0.2)
-        }
-        return app
-    }
-
-    // MARK: - 画面操作
-
-    private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
-        app.descendants(matching: .any)[identifier].firstMatch
-    }
-
-    private func kanji(_ character: String, app: XCUIApplication) -> XCUIElement {
-        element("kanji.\(character)", in: app)
-    }
-
-    private func text(containing fragment: String, app: XCUIApplication) -> XCUIElement {
-        app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", fragment)).firstMatch
-    }
-
-    private func selectPosition(_ index: Int, _ position: String, app: XCUIApplication) {
-        let picker = app.buttons["componentPosition.\(index)"].firstMatch
-        XCTAssertTrue(picker.waitForExistence(timeout: 5), "\(index) 行目の位置が無い")
-        picker.tap()
-        let item = menuItem(position, app: app)
-        XCTAssertTrue(item.waitForExistence(timeout: 5), "位置のメニューに \(position) が無い")
-        item.tap()
-    }
-
-    // 部首の一覧の項目はラベル(「木 き」)で探す
-    private func selectRadical(_ index: Int, _ label: String, app: XCUIApplication) {
-        let button = app.buttons["componentForm.\(index)"].firstMatch
-        XCTAssertTrue(button.waitForExistence(timeout: 5), "\(index) 行目の部首のボタンが無い")
-        button.tap()
-        let list = element("componentFormList.\(index)", in: app)
-        XCTAssertTrue(list.waitForExistence(timeout: 5), "部首の一覧が開かない")
-        let item = list.buttons[label].firstMatch
-        scrollUntilHittable(item, in: list)
-        item.tap()
-        XCTAssertTrue(list.waitForNonExistence(timeout: 5), "選んでも一覧が閉じない")
-        XCTAssertTrue(button.label.contains(label), "\(index) 行目の表示が \(label) にならない: \(button.label)")
-    }
-
-    // 位置のメニューの項目。行のラベル(componentPosition.<行>)にも同じ名前があるので、それを除いて探す
-    private func menuItem(_ position: String, app: XCUIApplication) -> XCUIElement {
-        app.buttons.matching(NSPredicate(format: "label == %@ AND NOT (identifier BEGINSWITH 'componentPosition')", position)).firstMatch
-    }
-
-    // 画面の座標(ポイント)を押す
-    private func tap(x: CGFloat, y: CGFloat, app: XCUIApplication) {
-        app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: x, dy: y)).tap()
-    }
-
-    private func dismissKeyboard(app: XCUIApplication) {
-        guard app.keyboards.firstMatch.exists else {
-            return
-        }
-        let done = app.keyboards.buttons.matching(NSPredicate(format: "label IN %@", ["完了", "Done", "done", "改行", "Return", "return"])).firstMatch
-        if done.exists {
-            done.tap()
-        }
-    }
-
-    private func scrollUntilHittable(_ target: XCUIElement, in app: XCUIApplication) {
-        scrollUntilHittable(target, in: app.scrollViews.firstMatch)
-    }
-
-    // 項目が容器の中に収まるまで少しずつ動かす。swipe は行き過ぎて項目が上端に掛かり、
-    // 掛かった項目の isHittable は例外になるため、位置を見て上下に 120pt ずつ引く
-    private func scrollUntilHittable(_ target: XCUIElement, in container: XCUIElement) {
-        for _ in 0..<40 {
-            let frame = container.frame
-            if target.exists, !target.frame.isEmpty, frame.contains(target.frame), target.isHittable {
-                return
-            }
-            let center = container.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-            let pullDown = target.exists && !target.frame.isEmpty && target.frame.minY < frame.minY
-            center.press(forDuration: 0.05, thenDragTo: center.withOffset(CGVector(dx: 0, dy: pullDown ? 120 : -120)))
-        }
-        XCTFail("\(target) が画面に出ない")
+        launch(arguments: ["-corbeUITestBadgeSeconds", "5"])
     }
 
     // MARK: - クリップボード
 
-    // ランナー自身の読み込みにもペースト許可が出うるので、読み込みは別スレッドで行い、その間アラートを見張る(régu と同じ)
+    // ランナー自身の読み込みにもペースト許可が出うるので、読み込みは別スレッドで行ない、その間アラートを見張る(régu と同じ)
     private func readPasteboard() -> String? {
         let box = PasteboardBox()
         DispatchQueue.global().async {

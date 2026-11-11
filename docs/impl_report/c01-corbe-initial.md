@@ -16,7 +16,7 @@ stages:
   - {stage: 4, status: done, agent: implementer, model: opus}
   - {stage: 5, status: done, agent: code-reviewer}
   - {stage: 6, status: done, agent: implementer+test-reviewer+worker, model: opus}
-  - {stage: 7, status: done, agent: e2e-runner(XCUITest でスクリーンショット), model: sonnet, reason: "Simulator を手で操作する手段が無いため XCUITest(E1–E8)と撮影用テスト(作業用コピーのみ)で実施。判定はメインが画像を見て行った。ダークは起動画面のみ"}
+  - {stage: 7, status: done, agent: e2e-runner(XCUITest でスクリーンショット), model: sonnet, reason: "Simulator を手で操作する手段が無いため XCUITest(E1–E8)と撮影用テスト(作業用コピーのみ)で実施。判定はメインが画像を見て行なった。ダークは起動画面のみ"}
   - {stage: 8, status: done, agent: reality-checker}
   - {stage: 9, status: done}
   - {stage: 10, status: done}
@@ -30,7 +30,7 @@ adversarial:
 ## 要求事項
 
 漢字を 1 文字選ぶ iPhone アプリ corbé を SwiftUI で作り、GitHub(KusakabeYouichi、公開)に置く。開発環境の構成は écritu / régu に合わせる。
-選び方は 4 通り: élément / corbé(へん・つくり等のプルダウン＋自由入力の 3 行で AND 検索)、élément / Kangxi(康熙部首と画数。écritu の同等機能を流用)、
+選び方は 4 通り: élément / corbé(へん・つくり等のプルダウン+自由入力の 3 行で AND 検索)、élément / Kangxi(康熙部首と画数。écritu の同等機能を流用)、
 Lecture / chinoise(音読み)、Lecture / japonaise(訓読み)。絞り込んだ字をクリップボードへコピーする。アイコンはユーザー提供画像を PNG にして references/ に置く。
 
 ## 対応スコープ
@@ -47,10 +47,10 @@ Lecture / chinoise(音読み)、Lecture / japonaise(訓読み)。絞り込んだ
 
 | 論点 | 決定 |
 |---|---|
-| 部品データ | 当初 KRADFILE を選んだが「6,355 字では足りない」として、BabelStone IDS(作者が著作権を放棄し帰属表示も不要と表明)に変更。KRADFILE2 は再配布条件を確認できず不採用 |
+| 部品データ | 当初 KRADFILE を選んだが『6,355 字では足りない』として、BabelStone IDS(作者が著作権を放棄し帰属表示も不要と表明)に変更。KRADFILE2 は再配布条件を確認できず不採用 |
 | 対象の字 | CJK 統合漢字 U+4E00–9FFF の 20,992 字 |
 | corbé の入力 | 3 行 × [位置▼][部品]。AND |
-| コピー | タップで即コピー＋バッジ、長押しで詳細(コピーしない) |
+| コピー | タップで即コピー+バッジ、長押しで詳細(コピーしない) |
 | 読み検索 | 前方一致、ひらがな・カタカナ・半角カナのどれでも |
 | Kangxi の部首画数 | 既定(艹3 辶3 礻4 飠7)で固定 |
 | LICENSE | écritu と同じ文面(all rights reserved) |
@@ -77,7 +77,7 @@ Lecture / chinoise(音読み)、Lecture / japonaise(訓読み)。絞り込んだ
 
 ### 部品データを KRADFILE から BabelStone IDS に変えた
 
-- **なぜ**: KRADFILE は 6,355 字しか無く、位置の情報も無い。部品を要素まで細かく分けているので「可」で探すと「司」も当たる。BabelStone は統合漢字を全部収録し、⿰⿱ などの組み方で位置まで分かる
+- **なぜ**: KRADFILE は 6,355 字しか無く、位置の情報も無い。部品を要素まで細かく分けているので『可』で探すと『司』も当たる。BabelStone は統合漢字を全部収録し、⿰⿱ などの組み方で位置まで分かる
 - 字ごとに J 字形の IDS を選ぶ(括弧の無い J → [J] → 先頭)。最上位の組み方が子の位置を決め、子孫は親の位置を受け継ぐ(湖 = ⿰氵胡 なので [旁 月] に当たる)
 
 ### 展開の打ち切り
@@ -116,7 +116,7 @@ Lecture / chinoise(音読み)、Lecture / japonaise(訓読み)。絞り込んだ
 ## 残課題 / 申し送り
 
 - ライセンス画面の Unicode License の本文は原文の改行のまま表示しているため、狭い画面で折り返しがガタガタになる(見た目のみ)
-- BabelStone の「事実データなので著作権の対象外」はデータ作者の表明。上流(kawabata の ids、GPL 系)との関係は法的に未確認
+- BabelStone の『事実データなので著作権の対象外』はデータ作者の表明。上流(kawabata の ids、GPL 系)との関係は法的に未確認
 - ダークモードは結果グリッド・Kangxi・長押しの詳細を見ていない
 - にくづき と 月 は区別しない(J 字形の IDS がどちらも 月 と書くため)。統合漢字に対応の無い ⺀(103 字)は入力しても当たらない(README に記載)
 - 入れ子の ⿻ を分解しないので、発 の部品は 冠 癶 だけ
