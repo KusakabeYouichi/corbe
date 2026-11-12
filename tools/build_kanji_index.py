@@ -12,12 +12,14 @@
     tools/component_input_aliases.tsv      自由入力の読み替え表(手書き)
     tools/kyoiku_kanji.tsv                 学年別漢字配当表(告示から起こした表)
     third_party/tanos/jlpt_kanji.tsv       JLPT の級(非公式。tanos.co.uk、CC BY)
+    third_party/kanjidic/kun_okurigana.tsv 訓読みの送り仮名の境目(KANJIDIC2、CC BY-SA 4.0)
 
 出力(Packages/CorbeKit/Sources/CorbeCore/Resources/):
     KanjiIndex.tsv
     1 行 = 1 字(CJK 統合漢字 U+4E00–9FFF):
     字 TAB 部首番号 TAB 部首内画数 TAB 総画数 TAB 区点 TAB 音読み TAB 訓読み TAB 部品
     TAB 常用(1 か空) TAB 人名用(1 か空) TAB 教育漢字の学年(1〜6 か空) TAB JLPT の級(5〜1 か空)
+    訓読みは、送り仮名の境目が分かるものだけ『あか.るい』のように . を入れる(KANJIDIC2 に同じ読みがあるとき)
     常用・人名用は Unihan の kJoyoKanji / kJinmeiyoKanji を持つ字(許容字体・異体として載る字も含む)
     並び = 部首番号 → 総画数 → 部首内画数 → コードポイント(écritu の索引と同じ)
     ComponentVariants.tsv
@@ -43,6 +45,7 @@ FOLD_PATH = ROOT / "tools/component_fold.tsv"
 ALIASES_PATH = ROOT / "tools/component_input_aliases.tsv"
 KYOIKU_PATH = ROOT / "tools/kyoiku_kanji.tsv"
 JLPT_PATH = ROOT / "third_party/tanos/jlpt_kanji.tsv"
+OKURIGANA_PATH = ROOT / "third_party/kanjidic/kun_okurigana.tsv"
 INDEX_OUT = RESOURCES / "KanjiIndex.tsv"
 VARIANTS_OUT = RESOURCES / "ComponentVariants.tsv"
 SUPPLEMENT_OUT = RESOURCES / "RadicalSupplementEquivalents.tsv"
@@ -324,6 +327,18 @@ def read_char_table(path, read_value):
         table[char] = read_value(value)
     return table
 
+# 『字 → {読み: 境目(.)付きの読み}』。Unihan の訓読みと同じ読みにだけ境目を付けるための表
+def read_okurigana():
+    def read_value(value):
+        marked = {}
+        for word in value.split():
+            stem, _, okurigana = word.partition(".")
+            if not stem or not okurigana or "." in okurigana:
+                sys.exit(f"{OKURIGANA_PATH.name}: 境目の形が不正です: {word}")
+            marked[stem + okurigana] = word
+        return marked
+    return read_char_table(OKURIGANA_PATH, read_value)
+
 def is_katakana(text):
     return all("ァ" <= ch <= "ヶ" or ch == "ー" for ch in text)
 
@@ -350,6 +365,7 @@ def main():
     readings = read_unihan("Unihan_Readings.txt", "kJapanese")
     joyo = read_unihan("Unihan_OtherMappings.txt", "kJoyoKanji")
     jinmeiyo = read_unihan("Unihan_OtherMappings.txt", "kJinmeiyoKanji")
+    okurigana = read_okurigana()
     grades = read_char_table(KYOIKU_PATH, lambda value: int(value))
     jlpt = read_char_table(JLPT_PATH, lambda value: int(value.removeprefix("N")))
     # 学年別漢字配当表の学年ごとの字数(1〜6 年、計 1,026)
@@ -371,9 +387,10 @@ def main():
             kuten = f"{int(kuten[:2])}-{int(kuten[2:])}"
         words = readings.get(cp, "").split()
         on = " ".join(word for word in words if is_katakana(word))
-        kun = " ".join(word for word in words if not is_katakana(word))
-        components = " ".join(expander.tokens(chr(cp)))
         char = chr(cp)
+        marked = okurigana.get(char, {})
+        kun = " ".join(marked.get(word, word) for word in words if not is_katakana(word))
+        components = " ".join(expander.tokens(char))
         status = (
             "1" if cp in joyo else "",
             "1" if cp in jinmeiyo else "",

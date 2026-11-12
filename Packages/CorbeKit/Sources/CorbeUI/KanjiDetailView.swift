@@ -12,7 +12,7 @@ struct KanjiDetailView: View {
                 .frame(maxWidth: .infinity)
                 .accessibilityHidden(true)
             row("音", value: entry.onReadings.isEmpty ? "—" : entry.onReadings.joined(separator: "、"), identifier: "detail.on")
-            row("訓", value: entry.kunReadings.isEmpty ? "—" : entry.kunReadings.joined(separator: "、"), identifier: "detail.kun")
+            row("訓", text: Text(Self.kunText(entry.kunParts)), identifier: "detail.kun")
             row("符号", value: entry.codePointLabel, identifier: "detail.codePoint")
             row("区点", value: entry.kuten.isEmpty ? "—" : entry.kuten, identifier: "detail.kuten")
             row("総画数", value: entry.totalStrokes > 0 ? "\(entry.totalStrokes)画" : "—", identifier: "detail.totalStrokes")
@@ -35,14 +35,36 @@ struct KanjiDetailView: View {
         return "常用 \(mark(entry.isJoyo))  教育 \(school)  人名用 \(jinmeiyo)"
     }
 
+    // 訓読みを『、』でつなぐ。送り仮名は細い字にして、語幹と見分けられるようにする
+    static func kunText(_ readings: [KunReading]) -> AttributedString {
+        guard !readings.isEmpty else {
+            return AttributedString("—")
+        }
+        var result = AttributedString()
+        for (index, reading) in readings.enumerated() {
+            if index > 0 {
+                result += AttributedString("、")
+            }
+            result += AttributedString(reading.stem)
+            var okurigana = AttributedString(reading.okurigana)
+            okurigana.font = .callout.weight(.ultraLight)
+            result += okurigana
+        }
+        return result
+    }
+
     // singleLine: 区分のように折り返すと読みにくい行は、小さい画面(吹き出しが狭い)では字を少し縮めて 1 行に収める
     private func row(_ title: String, value: String, identifier: String, singleLine: Bool = false) -> some View {
+        row(title, text: Text(value), identifier: identifier, singleLine: singleLine)
+    }
+
+    private func row(_ title: String, text: Text, identifier: String, singleLine: Bool = false) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(title)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .frame(width: 44, alignment: .leading)
-            Text(value)
+            text
                 .font(.callout)
                 .lineLimit(singleLine ? 1 : nil)
                 .minimumScaleFactor(singleLine ? 0.75 : 1)

@@ -394,6 +394,7 @@ final class CorbeE2EUITests: XCTestCase {
         )
         XCTAssertTrue(text(containing: "UNICODE LICENSE V3", app: app).waitForExistence(timeout: 5))
         XCTAssertTrue(text(containing: "BabelStone IDS", app: app).exists)
+        XCTAssertTrue(text(containing: "KANJIDIC2", app: app).exists)
         XCTAssertTrue(text(containing: "without asking permission or providing attribution", app: app).exists)
     }
 

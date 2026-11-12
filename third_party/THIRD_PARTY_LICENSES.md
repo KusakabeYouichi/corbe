@@ -40,6 +40,25 @@ information is shown in the in-app license screen.
 - The component columns of `KanjiIndex.tsv` are derived from this file
   (`tools/build_kanji_index.py`)
 
+## KANJIDIC2 (okurigana boundaries of kun readings)
+
+- https://www.edrdg.org/wiki/index.php/KANJIDIC_Project — This app uses
+  material from the KANJIDIC2 dictionary file, the property of the Electronic
+  Dictionary Research and Development Group, used in conformance with the
+  Group's licence (https://www.edrdg.org/edrdg/licence.html): Creative Commons
+  Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+- `third_party/kanjidic/kun_okurigana.tsv` (5,061 kanji) holds only the
+  okurigana boundary of the `ja_kun` readings (`あか.るい`), extracted by
+  `tools/extract_kun_okurigana.py` from `kanjidic2.xml.gz` (database_version
+  2026-316, sha256
+  a450ad0e66d938f2f1776e6339b21cf3037d9eba4fd0cf46be232fd40a37ac8b). The
+  extracted table is committed because the URL always serves the latest edition
+- The readings themselves still come from Unihan kJapanese; a boundary is added
+  only where KANJIDIC2 has the same reading (4,192 of 12,181 kun readings)
+- Share-alike: `third_party/kanjidic/kun_okurigana.tsv` and the boundary marks
+  (`.`) in the kun column of `KanjiIndex.tsv` are adapted from KANJIDIC2 and are
+  licensed under CC BY-SA 4.0
+
 ## tanos.co.uk JLPT kanji lists (JLPT level, unofficial)
 
 - Jonathan Waller, https://www.tanos.co.uk/jlpt/ — Creative Commons
@@ -62,7 +81,7 @@ information is shown in the in-app license screen.
 (Copyright Act of Japan, Article 13). The table in the official PDF is an
 image, so it was transcribed with OCR and checked against the per-grade counts
 printed in the table and against KANJIDIC2's grade field (used only for the
-check; no KANJIDIC2 data is included).
+check; no KANJIDIC2 data is included in that table).
 
 ## Author-compiled data
 

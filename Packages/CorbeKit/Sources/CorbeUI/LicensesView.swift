@@ -1,6 +1,6 @@
 import SwiftUI
 
-// (i) から開くライセンス画面: corbé の著作権、Unicode License(Unihan / UCD)全文、BabelStone IDS の出典と作者の表明
+// (i) から開くライセンス画面: corbé の著作権、Unicode License(Unihan / UCD)全文、KANJIDIC2 の出典、BabelStone IDS の出典と作者の表明
 struct LicensesView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -43,6 +43,10 @@ struct LicensesView: View {
                         Text(Self.unicodeLicense)
                             .font(.caption.monospaced())
                             .textSelection(.enabled)
+                    }
+                    section("KANJIDIC2") {
+                        Text("訓読みの送り仮名の境目。This app uses material from the KANJIDIC2 dictionary file, the property of the Electronic Dictionary Research and Development Group, used in conformance with the Group's licence (https://www.edrdg.org/edrdg/licence.html). Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0)")
+                        Text("境目を抜き出した表と、それを入れた索引は、同じ CC BY-SA 4.0 で https://github.com/KusakabeYouichi/corbe に公開しています。")
                     }
                     section("JLPT の級(非公式)") {
                         Text("Jonathan Waller, tanos.co.uk の JLPT 漢字表(https://www.tanos.co.uk/jlpt/)。Creative Commons Attribution (CC BY)")

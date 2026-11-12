@@ -274,7 +274,7 @@ struct ComponentSearchRuleTests {
             totalStrokes: total,
             kuten: "",
             onReadings: [],
-            kunReadings: [],
+            kunParts: [],
             components: components
         )
     }

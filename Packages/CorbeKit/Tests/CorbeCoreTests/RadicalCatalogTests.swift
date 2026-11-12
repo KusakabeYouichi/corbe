@@ -98,7 +98,7 @@ struct RadicalCatalogTests {
                 totalStrokes: total,
                 kuten: "",
                 onReadings: [],
-                kunReadings: [],
+                kunParts: [],
                 components: []
             )
         }

@@ -132,4 +132,30 @@ struct KanjiIndexTests {
         }
         #expect((try? KanjiIndex(contents: base + "\t1\t\t1\t2"))?.entries.first?.schoolGrade == 1)
     }
+
+    @Test("A23 送り仮名: 明 は あか+るい・あ+ける、境目の分からない ひかり と、送り仮名の無い 村 の むら は全体が語幹")
+    func okuriganaBoundaries() throws {
+        let akari = try #require(Bundled.entry("明"))
+        #expect(akari.kunParts.contains(KunReading(stem: "あか", okurigana: "るい")))
+        #expect(akari.kunParts.contains(KunReading(stem: "あ", okurigana: "ける")))
+        #expect(akari.kunParts.contains(KunReading(stem: "ひかり")))
+        #expect(try #require(Bundled.entry("村")).kunParts == [KunReading(stem: "むら")])
+    }
+
+    @Test("A24 境目を入れても、検索に使う訓読みは境目なしのまま(明 の先頭 3 件は あかり あかるい あかるむ)")
+    func kunReadingsStayPlain() throws {
+        let entry = try #require(Bundled.entry("明"))
+
+        #expect(Array(entry.kunReadings.prefix(3)) == ["あかり", "あかるい", "あかるむ"])
+        #expect(entry.kunReadings == entry.kunParts.map(\.text))
+    }
+
+    @Test("A25 境目の形が違う訓読みは読み込みで弾く(. が先頭・末尾・2 つ)")
+    func malformedOkuriganaIsRejected() {
+        for kun in [".あかるい", "あかるい.", "あ.か.るい"] {
+            #expect(throws: CorbeDataError.malformedLine(file: "KanjiIndex.tsv", line: 1)) {
+                try KanjiIndex(contents: "明\t72\t4\t8\t44-32\tメイ\t\(kun)\tL:日 R:月\t1\t\t2\t4")
+            }
+        }
+    }
 }

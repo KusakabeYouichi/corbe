@@ -44,6 +44,13 @@ public struct KanjiIndex: Sendable {
                 }
                 components.append(parsed)
             }
+            var kunParts: [KunReading] = []
+            for word in fields[6].split(separator: " ") {
+                guard let parsed = KunReading(marked: word) else {
+                    throw CorbeDataError.malformedLine(file: fileName, line: lineNumber)
+                }
+                kunParts.append(parsed)
+            }
             entries.append(KanjiEntry(
                 character: String(fields[0]),
                 radical: radical,
@@ -51,7 +58,7 @@ public struct KanjiIndex: Sendable {
                 totalStrokes: total,
                 kuten: String(fields[4]),
                 onReadings: fields[5].split(separator: " ").map(String.init),
-                kunReadings: fields[6].split(separator: " ").map(String.init),
+                kunParts: kunParts,
                 components: components,
                 isJoyo: isJoyo,
                 isJinmeiyo: isJinmeiyo,

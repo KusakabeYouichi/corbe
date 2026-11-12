@@ -10,7 +10,7 @@
   - élément / Kangxi: 康熙字典の部首(位置カテゴリー → 部首の字形)と画数で探す(écritu の部首ピッカーを流用)
   - Lecture / chinoise: 音読みの前方一致(ひらがな・カタカナどちらでも)
   - Lecture / japonaise: 訓読みの前方一致(ひらがな・カタカナどちらでも)
-- 結果の字をタップするとコピーし、長押しで読み・U+XXXX・区点・総画数・部首・区分(常用 / 教育漢字の学年 / 人名用)・JLPT の級を出す
+- 結果の字をタップするとコピーし、長押しで読み(訓読みの送り仮名は細い字)・U+XXXX・区点・総画数・部首・区分(常用 / 教育漢字の学年 / 人名用)・JLPT の級を出す
 
 ## 構成
 
@@ -85,6 +85,7 @@ python3 tools/build_kanji_index.py   # Packages/CorbeKit/Sources/CorbeCore/Resou
 - Unihan / Unicode Character Database 17.0.0(Unicode License v3): 部首・画数(kRSUnicode / kTotalStrokes)、区点(kJis0)、読み(kJapanese)、部首の字(CJKRadicals.txt / EquivalentUnifiedIdeograph.txt)
 - BabelStone IDS(Andrew West。ファイルの中で、許可も帰属表示も要らないと表明されている): 部品の分解。URL が常に最新版を返すため、採用した版(Unicode 16.0 版、File Date 2025-06-27)を `third_party/babelstone/IDS.TXT` としてコミットしている。更新は手で差し替えてコミットする
 - 学年別漢字配当表(平成29年告示。著作権の対象外): 教育漢字の学年。PDF の表は画像なので OCR で起こし、学年別の字数と KANJIDIC2 の grade で検算して `tools/kyoiku_kanji.tsv` に置いた
+- KANJIDIC2(EDRDG、CC BY-SA 4.0): 訓読みの送り仮名の境目。Unihan の読みは『あかるい』のように境目を持たないので、KANJIDIC2 に同じ読みがあるものだけ『あか.るい』と境目を入れる(訓読み 12,181 件のうち 4,192 件)。URL が常に最新版を返すため、`tools/extract_kun_okurigana.py` で境目だけを抜き出した `third_party/kanjidic/kun_okurigana.tsv` をコミットしている。この表と、索引の訓読みの境目(.)は CC BY-SA 4.0
 - tanos.co.uk の JLPT 漢字表(Jonathan Waller、CC BY): JLPT の級。2010 年以降の公式の漢字表は無いため、アプリでは『非公式』と出す。サイトが引けなくなっているので、Wayback Machine の写し(2020 年)から `third_party/tanos/jlpt_kanji.tsv` を起こした
 - 詳細は `third_party/THIRD_PARTY_LICENSES.md`
 

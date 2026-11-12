@@ -37,6 +37,33 @@ public struct ComponentToken: Sendable, Hashable {
     }
 }
 
+// 訓読みの 1 件。送り仮名の境目が分かるものだけ okurigana を持つ(『あか.るい』→ あか + るい)。
+// 境目の出典は KANJIDIC2。同じ読みが無いものは境目が分からないので、全体を stem に入れる
+public struct KunReading: Sendable, Hashable {
+    public let stem: String
+    public let okurigana: String
+
+    public var text: String { stem + okurigana }
+
+    public init(stem: String, okurigana: String = "") {
+        self.stem = stem
+        self.okurigana = okurigana
+    }
+
+    // "あか.るい" の形を読む(. が無ければ全体が stem)。. の前後が空、. が 2 つ以上なら nil
+    public init?(marked: some StringProtocol) {
+        let parts = marked.split(separator: ".", omittingEmptySubsequences: false)
+        switch parts.count {
+        case 1 where !parts[0].isEmpty:
+            self.init(stem: String(parts[0]))
+        case 2 where !parts[0].isEmpty && !parts[1].isEmpty:
+            self.init(stem: String(parts[0]), okurigana: String(parts[1]))
+        default:
+            return nil
+        }
+    }
+}
+
 // 索引の 1 字(KanjiIndex.tsv の 1 行)
 public struct KanjiEntry: Sendable, Hashable, Identifiable {
     public let character: String
@@ -47,7 +74,9 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
     // JIS X 0208 の区点("34-28")。無い字は空
     public let kuten: String
     public let onReadings: [String]
+    // 検索で毎回引くので、境目を除いた読みも持っておく(kunParts の text と同じ並び)
     public let kunReadings: [String]
+    public let kunParts: [KunReading]
     public let components: [ComponentToken]
     // 常用漢字・人名用漢字(Unihan kJoyoKanji / kJinmeiyoKanji。許容字体・異体として載る字も含む)
     public let isJoyo: Bool
@@ -75,7 +104,7 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
         totalStrokes: Int,
         kuten: String,
         onReadings: [String],
-        kunReadings: [String],
+        kunParts: [KunReading],
         components: [ComponentToken],
         isJoyo: Bool = false,
         isJinmeiyo: Bool = false,
@@ -88,7 +117,8 @@ public struct KanjiEntry: Sendable, Hashable, Identifiable {
         self.totalStrokes = totalStrokes
         self.kuten = kuten
         self.onReadings = onReadings
-        self.kunReadings = kunReadings
+        self.kunReadings = kunParts.map(\.text)
+        self.kunParts = kunParts
         self.components = components
         self.isJoyo = isJoyo
         self.isJinmeiyo = isJinmeiyo
